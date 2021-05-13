@@ -47,6 +47,7 @@ public:
 	bool nolla_voitti();
 	bool onko_siirto_mahdollinen(int ruutu);
 	void tee_siirto(int ruutu);
+	void aloita_alusta();
 };
 
 class Ristinollapeli {

@@ -474,3 +474,13 @@ void Ristinolla::tee_siirto(int ruutu) {
 	//ja lopuksi vaihdetaan vuoroa
 	vuorossa = ++vuorossa % 2;
 }
+
+void Ristinolla::aloita_alusta() {
+	ristit.clear();
+	nollat.clear();
+	vuorossa = 0;
+	max_ristit = 0;
+	max_nollat = 0;
+	vapaat = vapaat_ruudut(vakiot, ristit, nollat);
+	mahdolliset_rivit = pelattavat_rivit(vakiot, ristit, nollat);
+}
