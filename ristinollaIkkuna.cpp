@@ -12,7 +12,7 @@ ristinollaIkkuna::ristinollaIkkuna() : wxFrame(nullptr, wxID_ANY, "Ristinolla", 
 	valikko = new wxMenuBar();
 	this->SetMenuBar(valikko);
 	wxMenu* menu = new wxMenu();
-	menu->Append(314, "Aloita alusta");
+	menu->Append(314, "Uusi peli\tF2");
 	menu->Append(315, "Lopeta");
 	valikko->Append(menu, "Valikko");
 
@@ -25,7 +25,9 @@ ristinollaIkkuna::ristinollaIkkuna() : wxFrame(nullptr, wxID_ANY, "Ristinolla", 
 	wxGridSizer* grid = new wxGridSizer(vakiot.KORKEUS, vakiot.LEVEYS, 0, 0);
 
 	statusrivi = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(800, 50));
-	vuororuutu = new wxButton(statusrivi, wxID_ANY);
+	wxStaticText* teksti = new wxStaticText(statusrivi, wxID_ANY, "Vuorossa: ", wxPoint(20, 15));
+	//teksti->AppendString
+	vuororuutu = new wxButton(statusrivi, wxID_ANY, "", wxPoint(100, 10), wxSize(30, 30));
 	vuororuutu->Enable(false);
 	vuororuutu->SetLabel(vakiot.MERKIT[ristinolla.vuorossa]);
 	
