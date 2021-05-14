@@ -10,5 +10,6 @@ private:
 
 public:
 	virtual bool OnInit();
+	int FilterEvent(wxEvent &evt);
 };
 
