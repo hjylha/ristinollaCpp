@@ -63,3 +63,14 @@ public:
 	Ristinollapeli(Vakiot vakio);
 };
 
+
+// AI-juttuja/pelin tallennus
+class PelattuPeli {
+public:
+	int lopputulos;
+	//std::vector<int> ristit;
+	//std::vector<int> nollat;
+	std::vector<int> siirrot;
+	PelattuPeli();
+	PelattuPeli(int tulos, std::vector<int>ristivektori, std::vector<int> nollavektori);
+};

@@ -78,6 +78,39 @@ std::vector<int> vapaat_ruudut(Vakiot vakiot, std::vector<int> ristit, std::vect
 	return vapaat;
 }
 
+// lisataan ruutu jarjestettyyn vektoriin
+std::vector<int> lisaa_ruutu(int ruutu, std::vector<int> vektori) {
+	// jos vektori on tyhja, asia on helppo
+	if (vektori.empty())
+	{
+		vektori.push_back(ruutu);
+		return vektori;
+	}
+	// muuten joutuu kai tekemaan jotain
+	int indeksi = 0;
+	int lisa = vektori.size() / 2;
+	while (lisa > 0)
+	{
+		indeksi = indeksi + lisa;
+		if (ruutu < vektori[indeksi])
+		{
+			indeksi = indeksi - lisa;
+		}
+		lisa = lisa / 2;
+	}
+	// joko indeksin paikalle tai seuraavalle paikalle
+	//std::next(vektori.begin(), index)
+	if (ruutu < vektori[indeksi])
+	{
+		vektori.insert(vektori.begin() + indeksi, ruutu);
+	}
+	else
+	{
+		vektori.insert(vektori.begin() + indeksi + 1, ruutu);
+	}
+	return vektori;
+}
+
 
 Rivi::Rivi(Vakiot vakio, std::string rivin_suunta, int rivin_alkuruutu) {
 	vakiot = vakio;
@@ -330,11 +363,13 @@ bool Ristinolla::onko_siirto_mahdollinen(int ruutu) {
 void Ristinolla::tee_siirto(int ruutu) {
 	if (vuorossa == 0)
 	{
-		ristit.push_back(ruutu);
+		//ristit.push_back(ruutu);
+		ristit = lisaa_ruutu(ruutu, ristit);
 	}
 	else
 	{
-		nollat.push_back(ruutu);
+		//nollat.push_back(ruutu);
+		nollat = lisaa_ruutu(ruutu, nollat);
 	}
 	// vapaiden update
 	vapaat.erase(std::remove(vapaat.begin(), vapaat.end(), ruutu), vapaat.end());
@@ -483,4 +518,133 @@ void Ristinolla::aloita_alusta() {
 	max_nollat = 0;
 	vapaat = vapaat_ruudut(vakiot, ristit, nollat);
 	mahdolliset_rivit = pelattavat_rivit(vakiot, ristit, nollat);
+}
+
+
+
+// AI-juttuja/pelin tallennus
+
+// onko tarvetta jarjestyksen vaihdolle?
+std::vector<int> tee_siirtolista(std::vector<int> ristit, std::vector<int> nollat) {
+	std::vector<int> siirrot;
+	for (int i = 0; i < ristit.size() - 1; i++)
+	{
+		siirrot.push_back(ristit[i]);
+		siirrot.push_back(nollat[i]);
+	}
+	siirrot.push_back(ristit[ristit.size() - 1]);
+	if (ristit.size() == nollat.size())
+	{
+		siirrot.push_back(nollat[nollat.size() - 1]);
+	}
+	return siirrot;
+}
+
+std::vector<std::vector<int>> ristit_ja_nollat(std::vector<int> siirrot) {
+	std::vector<int> ristit, nollat;
+	for (int i = 0; i < siirrot.size(); i++)
+	{
+		if (i % 2 == 0) {
+			ristit.push_back(siirrot[i]);
+		}
+		else {
+			nollat.push_back(siirrot[i]);
+		}
+	}
+	std::vector<std::vector<int>> ristit_ja_nollat;
+	ristit_ja_nollat.push_back(ristit);
+	ristit_ja_nollat.push_back(nollat);
+	return ristit_ja_nollat;
+}
+
+PelattuPeli::PelattuPeli() {
+
+}
+
+PelattuPeli::PelattuPeli(int tulos, std::vector<int> ristivektori, std::vector<int> nollavektori) {
+	lopputulos = tulos;
+	siirrot = tee_siirtolista(ristivektori, nollavektori);
+	//ristit = ristivektori;
+	//nollat = nollavektori;
+}
+
+
+std::vector<PelattuPeli> simuloi_peleja(Vakiot vakio, int lukum) {
+	std::vector<PelattuPeli> pelit;
+	if (lukum < 1)
+	{
+		return pelit;
+	}
+	for (int i = 0; i < lukum; i++)
+	{
+		Ristinolla ristinolla(vakio, {}, {});
+		bool peli_menossa = true;
+		while (peli_menossa)
+		{
+			// valitaan satunnainen vapaa ruutu
+			// parempi strategia olisi syyta keksia
+			int seuraava_ruutu = ristinolla.vapaat[rand() % ristinolla.vapaat.size()];
+			ristinolla.tee_siirto(seuraava_ruutu);
+			if (ristinolla.risti_voitti())
+			{
+				PelattuPeli peli(1, ristinolla.ristit, ristinolla.nollat);
+				pelit.push_back(peli);
+				peli_menossa = false;
+			}
+			else if (ristinolla.nolla_voitti())
+			{
+				PelattuPeli peli(-1, ristinolla.ristit, ristinolla.nollat);
+				pelit.push_back(peli);
+				peli_menossa = false;
+			}
+			else if (ristinolla.on_ratkaisematon())
+			{
+				PelattuPeli peli(0, ristinolla.ristit, ristinolla.nollat);
+				pelit.push_back(peli);
+				peli_menossa = false;
+			}
+		}
+		
+	}
+
+	return pelit;
+}
+
+
+// ja sitten bruteforce-funktio
+std::vector<PelattuPeli> pelaa_kaikki_pelit(Ristinolla ristinolla, std::vector<PelattuPeli> aiemmat_pelit) {
+	//std::vector<PelattuPeli> pelit;
+	//Ristinolla ristinolla(ristinolla0.vakiot, ristinolla0.ristit, ristinolla0.nollat);
+
+	// jos ei lisapelattavaa ole, tilanne on helppo
+	if (ristinolla.risti_voitti())
+	{
+		PelattuPeli peli(1, ristinolla.ristit, ristinolla.nollat);
+		aiemmat_pelit.push_back(peli);
+		return aiemmat_pelit;
+	}
+	else if (ristinolla.nolla_voitti())
+	{
+		PelattuPeli peli(-1, ristinolla.ristit, ristinolla.nollat);
+		aiemmat_pelit.push_back(peli);
+		return aiemmat_pelit;
+	}
+	else if (ristinolla.on_ratkaisematon())
+	{
+		PelattuPeli peli(0, ristinolla.ristit, ristinolla.nollat);
+		aiemmat_pelit.push_back(peli);
+		return aiemmat_pelit;
+	}
+	
+	// muuten joutuu kaymaan lapi siirtoja
+	for (auto i = ristinolla.vapaat.begin(); i != ristinolla.vapaat.end(); i++)
+	{
+		std::vector<int> ristivektori = ristinolla.ristit;
+		std::vector<int> nollavektori = ristinolla.nollat;
+		ristinolla.tee_siirto(*i);
+		aiemmat_pelit = pelaa_kaikki_pelit(ristinolla, aiemmat_pelit);
+		//ristinolla.kumoa_siirto(*i);
+		ristinolla = Ristinolla(ristinolla.vakiot, ristivektori, nollavektori);
+	}
+	return aiemmat_pelit;
 }
