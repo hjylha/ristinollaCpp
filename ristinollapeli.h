@@ -26,7 +26,22 @@ public:
 	Rivi(Vakiot vakiot, std::string rivin_suunta, int rivin_alkuruutu, std::vector<int> ristit, std::vector<int> nollat);
 	int ristien_lkm();
 	int nollien_lkm();
+	bool sopii();
 	bool on_pelattavissa();
+};
+
+class Rivit {
+public:
+	Vakiot vakiot;
+	//std::vector<int> aktiiviset_rivit;
+	std::vector<bool> aktiiviset_rivit;
+	std::vector<Rivi> rivit;
+	Rivit();
+	Rivit(Vakiot vakio, std::vector<int> ristit, std::vector<int> nollat);
+	//bool onko_ruudussa_risti(int ruutu);
+	//bool onko_ruudussa_nolla(int ruutu);
+	//bool onko_ruutu_vapaa(int ruutu);
+	std::vector<std::vector<int>> missa_riveissa_ruutu_on(int ruutu);
 };
 
 class Ristinolla {
@@ -35,8 +50,11 @@ public:
 	std::vector<int> vapaat;
 	std::vector<int> ristit;
 	std::vector<int> nollat;
-	std::vector<Rivi> mahdolliset_rivit;
+	std::vector<int> siirrot;
+	Rivit rivit;
+	//std::vector<Rivi> mahdolliset_rivit;
 	//std::vector<bool> aktiiviset_rivit;
+	//std::vector<int> poistettavat;
 	int max_ristit;
 	int max_nollat;
 	int vuorossa;
@@ -47,7 +65,10 @@ public:
 	bool nolla_voitti();
 	bool onko_siirto_mahdollinen(int ruutu);
 	void tee_siirto(int ruutu);
+	//int edellinen_siirto();
+	void kumoa_siirto();
 	void aloita_alusta();
+	//bool poistetaan(int rivi_id);
 };
 
 class Ristinollapeli {
