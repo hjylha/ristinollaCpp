@@ -10,19 +10,41 @@ wxEND_EVENT_TABLE()
 
 AsetusIkkuna::AsetusIkkuna() : wxFrame(nullptr, wxID_ANY, "Asetukset", wxDefaultPosition, wxDefaultSize)
 {
+	wxBoxSizer* rivi1 = new wxBoxSizer(wxHORIZONTAL);
+	wxStaticText* leveys_selitys = new wxStaticText(this, wxID_ANY, "Leveys (ruutuina): ");
+	rivi1->Add(leveys_selitys, 1);
 	leveys_teksti = new wxTextCtrl(this, wxID_ANY, "");
-	korkeus_teksti = new wxTextCtrl(this, wxID_ANY, "");
-	vier_teksti = new wxTextCtrl(this, wxID_ANY, "");
+	rivi1->Add(leveys_teksti, 0);
 
+	wxBoxSizer* rivi2 = new wxBoxSizer(wxHORIZONTAL);
+	wxStaticText* korkeus_selitys = new wxStaticText(this, wxID_ANY, "Korkeus (ruutuina): ");
+	rivi2->Add(korkeus_selitys, 1);
+	korkeus_teksti = new wxTextCtrl(this, wxID_ANY, "");
+	rivi2->Add(korkeus_teksti, 0);
+
+	wxBoxSizer* rivi3 = new wxBoxSizer(wxHORIZONTAL);
+	wxStaticText* vier_selitys = new wxStaticText(this, wxID_ANY, "Merkkejä halutaan vierekkäin: ");
+	rivi3->Add(vier_selitys, 1);
+	vier_teksti = new wxTextCtrl(this, wxID_ANY, "");
+	rivi3->Add(vier_teksti, 0);
+
+	// satunnainen rivi
+	wxBoxSizer* rivi4 = new wxBoxSizer(wxHORIZONTAL);
+	wxStaticText* vali = new wxStaticText(this, wxID_ANY, "");
+	rivi4->Add(vali, 1);
+
+	wxBoxSizer* rivi5 = new wxBoxSizer(wxHORIZONTAL);
 	ok_painike = new wxButton(this, wxID_ANY, "OK");
+	rivi5->Add(ok_painike);
 	peru_painike = new wxButton(this, wxID_ANY, "Peruuta");
+	rivi5->Add(peru_painike);
 
 	wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
-	sizer->Add(leveys_teksti, 0, wxEXPAND);
-	sizer->Add(korkeus_teksti, 0, wxEXPAND);
-	sizer->Add(vier_teksti, 0, wxEXPAND);
-	sizer->Add(ok_painike, 0, wxEXPAND);
-	sizer->Add(peru_painike, 0, wxEXPAND);
+	sizer->Add(rivi1, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 10);
+	sizer->Add(rivi2, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 10);
+	sizer->Add(rivi3, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 10);
+	sizer->Add(rivi4, 0, wxEXPAND, 10);
+	sizer->Add(rivi5, 0, wxALIGN_CENTER | wxBOTTOM, 10);
 
 	this->SetSizer(sizer);
 }
@@ -154,7 +176,6 @@ void ristinollaIkkuna::avaa_asetukset(wxCommandEvent& evt) {
 void ristinollaIkkuna::muuta_asetuksia(int leveys, int korkeus, int vier_lkm) {
 	// poistetaan vanhat kaiketi???
 	ruudukko->Clear();
-	//sizer->Clear();
 	for (int i = 0; i < vakiot.LEVEYS * vakiot.KORKEUS; i++)
 	{
 		painikkeet[i]->Destroy();
@@ -175,12 +196,6 @@ void ristinollaIkkuna::muuta_asetuksia(int leveys, int korkeus, int vier_lkm) {
 		painikkeet[i]->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &ristinollaIkkuna::painallus, this);
 	}
 	ruudukko->Add(grid, 1, wxEXPAND);
-	//sizer->Add(ruudukko, 1, wxEXPAND);
-	//sizer->Add(statusrivi, 0, wxEXPAND);
-
-	this->SetSizer(sizer);
-	grid->Layout();
-	//ruudukko->Layout();
 	sizer->Layout();
 
 
