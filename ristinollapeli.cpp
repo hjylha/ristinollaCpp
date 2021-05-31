@@ -714,9 +714,37 @@ void Ristinolla::kumoa_siirto() {
 	}
 
 	// rivit pitanee kayda lapi
+	std::vector<std::vector<int>> muokattavat = rivit.missa_riveissa_ruutu_on(ruutu);
+	for (int i = 0; i < muokattavat.size(); i++)
+	{
+		// poistetaan merkki
+		rivit.rivit[muokattavat[i][0]].status[muokattavat[i][1]] = ' ';
+		// tarkastetaan rivin aktiivisuus
+		if (rivit.rivit[muokattavat[i][0]].sopii() && rivit.rivit[muokattavat[i][0]].on_pelattavissa())
+		{
+			rivit.aktiiviset_rivit[muokattavat[i][0]] = true;
+		}
+	}
+	// ja max_ristit / max_nollat
+	max_ristit = 0;
+	max_nollat = 0;
+	for (int i = 0; i < vakiot.LEVEYS * vakiot.KORKEUS * 4; i++)
+	{
+		if (rivit.aktiiviset_rivit[i])
+		{
+			if (rivit.rivit[i].ristien_lkm() > max_ristit)
+			{
+				max_ristit = rivit.rivit[i].ristien_lkm();
+			}
+			else if (rivit.rivit[i].nollien_lkm() > max_nollat)
+			{
+				max_nollat = rivit.rivit[i].nollien_lkm();
+			}
+		}
+	}
 
 	//lopuksi vaihdetaan vuoro
-	vuorossa = ++vuorossa % 2;
+	vuorossa = --vuorossa % 2;
 }
 
 void Ristinolla::aloita_alusta() {
