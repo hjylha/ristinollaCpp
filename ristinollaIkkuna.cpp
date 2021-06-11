@@ -55,7 +55,7 @@ AsetusIkkuna::~AsetusIkkuna() {
 
 
 //wxPoint(30, 30), wxSize(800, 600)
-ristinollaIkkuna::ristinollaIkkuna() : wxFrame(nullptr, wxID_ANY, "Ristinolla", wxPoint(30, 30), wxDefaultSize)
+ristinollaIkkuna::ristinollaIkkuna() : wxFrame(nullptr, wxID_ANY, "Ristinolla", wxPoint(30, 30), wxSize(800, 600))
 {
 	// asetusikkuna on olemassa, vaikkei ehka nakyvilla
 	asetusikkuna = new AsetusIkkuna();
@@ -106,39 +106,46 @@ ristinollaIkkuna::~ristinollaIkkuna() {
 	delete[] painikkeet;
 }
 
+void ristinollaIkkuna::siirra(int ruutu) {
+	bool alusta = false;
+	painikkeet[ruutu]->SetLabel(vakiot.MERKIT[ristinolla.vuorossa]);
+	painikkeet[ruutu]->Enable(false);
+	ristinolla.tee_siirto(ruutu);
+	vuororuutu->SetLabel(vakiot.MERKIT[ristinolla.vuorossa]);
+	// tarkistetaan, onko peli ohi
+	if (ristinolla.risti_voitti())
+	{
+		alusta = true;
+		wxMessageBox("Risti voitti!!!!!");
+	}
+	else if (ristinolla.nolla_voitti())
+	{
+		alusta = true;
+		wxMessageBox("Nolla voitti!!!!!");
+	}
+	else if (ristinolla.on_ratkaisematon())
+	{
+		alusta = true;
+		wxMessageBox("Kumpikaan ei voi voittaa.");
+	}
+	// jos peli loppunut, deaktivoidaan painikkeet
+	if (alusta)
+	{
+		for (int i = 0; i < vakiot.LEVEYS * vakiot.KORKEUS; i++)
+		{
+			painikkeet[i]->Enable(false);
+		}
+	}
+}
+
 void ristinollaIkkuna::painallus(wxCommandEvent& evt) {
 	int ruutu = evt.GetId() - 1000;
 	if (ristinolla.onko_siirto_mahdollinen(ruutu))
 	{
-		bool alusta = false;
-		painikkeet[ruutu]->SetLabel(vakiot.MERKIT[ristinolla.vuorossa]);
-		painikkeet[ruutu]->Enable(false);
-		ristinolla.tee_siirto(ruutu);
-		vuororuutu->SetLabel(vakiot.MERKIT[ristinolla.vuorossa]);
-		if (ristinolla.risti_voitti())
-		{
-			alusta = true;
-			wxMessageBox("Risti voitti!!!!!");
-		}
-		else if (ristinolla.nolla_voitti())
-		{
-			alusta = true;
-			wxMessageBox("Nolla voitti!!!!!");
-		}
-		else if (ristinolla.on_ratkaisematon())
-		{
-			alusta = true;
-			wxMessageBox("Kumpikaan ei voi voittaa.");
-		}
-		if (alusta)
-		{
-			//this->aloita_alusta();
-			// jos peli loppunut, deaktivoidaan painikkeet
-			for (int i = 0; i < vakiot.LEVEYS * vakiot.KORKEUS; i++)
-			{
-				painikkeet[i]->Enable(false);
-			}
-		}
+		siirra(ruutu);
+		// AIn siirto
+		int siirto = siirto_arvon_perusteella(ristinolla);
+		siirra(siirto);
 	}
 	evt.Skip();
 }

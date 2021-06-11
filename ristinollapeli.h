@@ -2,7 +2,10 @@
 
 #include <string>
 #include <vector>
-#include <list>
+#include <map>
+#include <fstream>
+#include <cmath>
+#include <algorithm>
 
 class Vakiot {
 public:
@@ -22,10 +25,12 @@ public:
 	std::vector<int> ruudut;
 	std::vector<char> status;
 	//Rivi(int rivin_pituus);
-	Rivi(Vakiot vakiot, std::string rivin_suunta, int rivin_alkuruutu);
+	Rivi();
+	// Rivi(Vakiot vakiot, std::string rivin_suunta, int rivin_alkuruutu);
 	Rivi(Vakiot vakiot, std::string rivin_suunta, int rivin_alkuruutu, std::vector<int> ristit, std::vector<int> nollat);
 	int ristien_lkm();
 	int nollien_lkm();
+	int merkkien_lkm(int merkki_indeksi);
 	bool sopii();
 	bool on_pelattavissa();
 };
@@ -51,16 +56,14 @@ public:
 	std::vector<int> ristit;
 	std::vector<int> nollat;
 	std::vector<int> siirrot;
-	Rivit rivit;
-	//std::vector<Rivi> mahdolliset_rivit;
-	//std::vector<bool> aktiiviset_rivit;
-	//std::vector<int> poistettavat;
-	int max_ristit;
-	int max_nollat;
 	int vuorossa;
+	Rivit rivit;
+	// merkki_lkm[0][i] on niiden (aktiivisten) rivien lkm, joissa on i ristia
+	std::vector<std::map<int, int>> merkki_lkm;
 	Ristinolla();
 	Ristinolla(Vakiot vakio, std::vector<int> ristiruudut, std::vector<int> nollaruudut);
 	bool on_ratkaisematon();
+	std::pair<bool, int> voitti();
 	bool risti_voitti();
 	bool nolla_voitti();
 	bool onko_siirto_mahdollinen(int ruutu);
@@ -69,6 +72,7 @@ public:
 	void kumoa_siirto();
 	void aloita_alusta();
 	//bool poistetaan(int rivi_id);
+	int arvo();
 };
 
 class Ristinollapeli {
@@ -85,7 +89,22 @@ public:
 };
 
 
+// funktioita
+std::vector<int> tee_siirtolista(std::vector<int> ristit, std::vector<int> nollat);
+std::vector<std::vector<int>> ristit_ja_nollat(std::vector<int> siirrot);
+bool onko_ruudussa_risti(int ruutu, std::vector<int> ristit);
+bool onko_ruudussa_nolla(int ruutu, std::vector<int> nollat);
+bool onko_ruutu_vapaa(int ruutu, std::vector<int> ristit, std::vector<int> nollat);
+std::vector<int> vapaat_ruudut(Vakiot vakiot, std::vector<int> ristit, std::vector<int> nollat);
+// jarjestettyjen vektorien operaatioita
+std::vector<int> lisaa_ruutu(int ruutu, std::vector<int> vektori);
+int etsi_indeksi(int luku, std::vector<int> vektori);
+
+
 // AI-juttuja/pelin tallennus
+int siirto_arvon_perusteella(Ristinolla ristinolla);
+
+
 class PelattuPeli {
 public:
 	int lopputulos;
@@ -95,3 +114,14 @@ public:
 	PelattuPeli();
 	PelattuPeli(int tulos, std::vector<int>ristivektori, std::vector<int> nollavektori);
 };
+
+void tallenna_pelit(Vakiot vakio, std::vector<PelattuPeli> pelit);
+std::vector<PelattuPeli> lataa_pelit(Vakiot vakio);
+int ovatko_jarjestyksessa(std::vector<int> siirrot1, std::vector<int> siirrot2);
+std::vector<PelattuPeli> lisaa_peli(PelattuPeli peli, std::vector<PelattuPeli> pelit);
+int etsi_peli(PelattuPeli peli, std::vector<PelattuPeli> pelit);
+bool loytyyko_osa_pelia(std::vector<int> siirrot, std::vector<PelattuPeli> pelit);
+std::vector<PelattuPeli> etsi_osa_pelia(std::vector<int> siirrot, std::vector<PelattuPeli> pelit, int max_num);
+
+
+

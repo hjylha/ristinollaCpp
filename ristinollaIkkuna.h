@@ -41,6 +41,7 @@ public:
 	void muuta_asetuksia(int leveys, int korkeus, int vier_lkm);
 	//void tallenna_asetukset();
 	//void lataa_asetukset();
+	void siirra(int ruutu);
 	void painallus(wxCommandEvent& evt);
 	void aloita_alusta();
 	void aloita_alusta(wxCommandEvent& evt);
