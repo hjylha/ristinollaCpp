@@ -607,6 +607,11 @@ int Ristinolla::arvo() {
 
 // AI-juttuja/pelin tallennus
 
+// kai sita voi aloitussiirron hardcodata (jonnekin keskelle)
+int aloitussiirto(Vakiot vakio) {
+	return (vakio.KORKEUS / 2) * vakio.LEVEYS + vakio.LEVEYS / 2;
+}
+
 // helppo algoritmi seuraavan siirron paattamiseen
  int siirto_arvon_perusteella(Ristinolla ristinolla) {
 	 int siirto = -1;

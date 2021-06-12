@@ -21,7 +21,11 @@ public:
 	wxButton* peru_painike = nullptr;
 
 	AsetusIkkuna();
+	//AsetusIkkuna(Vakiot vakio);
+	AsetusIkkuna(std::map<std::string, int> asetukset);
 	~AsetusIkkuna();
+	//void ai_valinnat_paalle();
+	void ai_vaihto(wxCommandEvent& evt);
 };
 
 
@@ -39,7 +43,8 @@ public:
 	wxButton* vuororuutu = nullptr;
 
 	// pelijuttuja
-	int ai_moodi;  // pelaako AI ristilla (0), nollalla (1) vai ei ollenkaan (-1)
+	std::map<std::string, int> asetukset;
+	//int ai_moodi;  // pelaako AI ristilla (0), nollalla (1) vai ei ollenkaan (-1)
 	Vakiot vakiot;  // = Vakiot(3, 3, 3);  // 24, 16, 5
 	//Ristinollapeli ristinolla;
 	Ristinolla ristinolla;
@@ -60,5 +65,8 @@ public:
 	wxDECLARE_EVENT_TABLE();
 };
 
-Vakiot lataa_asetukset();
-void tallenna_asetukset(int leveys, int korkeus, int vier_lkm);
+std::map<std::string, int> tarkasta_asetukset(std::map<std::string, int> asetukset, std::map<std::string, int> ylarajat);
+std::map<std::string, int> lataa_asetukset();
+//Vakiot lataa_asetukset();
+void tallenna_asetukset(int leveys, int korkeus, int vier_lkm, int ai_moodi);
+//void tallenna_asetukset(int leveys, int korkeus, int vier_lkm);

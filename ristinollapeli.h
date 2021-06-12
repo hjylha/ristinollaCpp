@@ -102,6 +102,7 @@ int etsi_indeksi(int luku, std::vector<int> vektori);
 
 
 // AI-juttuja/pelin tallennus
+int aloitussiirto(Vakiot vakio);
 int siirto_arvon_perusteella(Ristinolla ristinolla);
 
 
