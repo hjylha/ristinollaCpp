@@ -29,22 +29,40 @@ AsetusIkkuna::AsetusIkkuna() : wxFrame(nullptr, wxID_ANY, "Asetukset", wxDefault
 	rivi3->Add(vier_teksti, 0);
 
 	// satunnainen rivi
-	wxBoxSizer* rivi4 = new wxBoxSizer(wxHORIZONTAL);
+	wxBoxSizer* rivi3_vali = new wxBoxSizer(wxHORIZONTAL);
 	wxStaticText* vali = new wxStaticText(this, wxID_ANY, "");
-	rivi4->Add(vali, 1);
+	rivi3_vali->Add(vali, 1);
+
+	// Valinta, pelataanko AI:ta vastaan, ja onko AI risti vai nolla
+	wxBoxSizer* rivi4 = new wxBoxSizer(wxHORIZONTAL);
+	ai_paalla_check = new wxCheckBox(this, wxID_ANY, "Vastustajana AI");
+	rivi4->Add(ai_paalla_check, 0);
 
 	wxBoxSizer* rivi5 = new wxBoxSizer(wxHORIZONTAL);
+	wxString vaihtoehdot[] = { "Risti", "Nolla" };
+	ai_valinta = new wxRadioBox(this, wxID_ANY, "AI-pelaajan puoli", wxDefaultPosition, wxDefaultSize, 2, vaihtoehdot);
+	rivi5->Add(ai_valinta, 0);
+
+	// satunnainen rivi
+	wxBoxSizer* rivi6_vali = new wxBoxSizer(wxHORIZONTAL);
+	wxStaticText* vali1 = new wxStaticText(this, wxID_ANY, "");
+	rivi6_vali->Add(vali1, 1);
+
+	wxBoxSizer* rivi7 = new wxBoxSizer(wxHORIZONTAL);
 	ok_painike = new wxButton(this, wxID_ANY, "OK");
-	rivi5->Add(ok_painike);
+	rivi7->Add(ok_painike);
 	peru_painike = new wxButton(this, wxID_ANY, "Peruuta");
-	rivi5->Add(peru_painike);
+	rivi7->Add(peru_painike);
 
 	wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
 	sizer->Add(rivi1, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 10);
 	sizer->Add(rivi2, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 10);
 	sizer->Add(rivi3, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 10);
+	sizer->Add(rivi3_vali, 0, wxEXPAND, 10);
 	sizer->Add(rivi4, 0, wxEXPAND, 10);
-	sizer->Add(rivi5, 0, wxALIGN_CENTER | wxBOTTOM, 10);
+	sizer->Add(rivi5, 0, wxEXPAND, 10);
+	sizer->Add(rivi6_vali, 0, wxEXPAND, 10);
+	sizer->Add(rivi7, 0, wxALIGN_CENTER | wxBOTTOM, 10);
 
 	this->SetSizer(sizer);
 }
@@ -69,7 +87,8 @@ ristinollaIkkuna::ristinollaIkkuna() : wxFrame(nullptr, wxID_ANY, "Ristinolla", 
 	menu->Append(316, "Lopeta");
 	valikko->Append(menu, "Valikko");
 
-
+	// ai_moodi pitaisi ladata asetustiedostosta
+	ai_moodi = 1;
 	//vakiot = Vakiot(12, 10, 5);
 	vakiot = lataa_asetukset();
 	//ristinolla = Ristinollapeli(vakiot);
@@ -100,13 +119,24 @@ ristinollaIkkuna::ristinollaIkkuna() : wxFrame(nullptr, wxID_ANY, "Ristinolla", 
 
 	this->SetSizer(sizer);
 	grid->Layout();
+
+	// jos AI aloittaa, sen siirron kai tulee maaraytya tassa
+	if (ai_moodi == 0)
+	{
+		int siirto = siirto_arvon_perusteella(ristinolla);
+		painikkeet[siirto]->SetLabel(vakiot.MERKIT[ristinolla.vuorossa]);
+		painikkeet[siirto]->Enable(false);
+		ristinolla.tee_siirto(siirto);
+		vuororuutu->SetLabel(vakiot.MERKIT[ristinolla.vuorossa]);
+		// peli ei kai voi paattya yhteen siirtoon?
+	}
 }
 
 ristinollaIkkuna::~ristinollaIkkuna() {
 	delete[] painikkeet;
 }
 
-void ristinollaIkkuna::siirra(int ruutu) {
+bool ristinollaIkkuna::siirra(int ruutu) {
 	bool alusta = false;
 	painikkeet[ruutu]->SetLabel(vakiot.MERKIT[ristinolla.vuorossa]);
 	painikkeet[ruutu]->Enable(false);
@@ -136,16 +166,20 @@ void ristinollaIkkuna::siirra(int ruutu) {
 			painikkeet[i]->Enable(false);
 		}
 	}
+	return alusta;
 }
 
 void ristinollaIkkuna::painallus(wxCommandEvent& evt) {
 	int ruutu = evt.GetId() - 1000;
 	if (ristinolla.onko_siirto_mahdollinen(ruutu))
 	{
-		siirra(ruutu);
-		// AIn siirto
-		int siirto = siirto_arvon_perusteella(ristinolla);
-		siirra(siirto);
+		bool alusta = siirra(ruutu);
+		// AI siirtaa, jos peli ei ole ohi, ja pelataan AI:ta vastaan
+		if (!alusta && ai_moodi != -1)
+		{
+			int siirto = siirto_arvon_perusteella(ristinolla);
+			siirra(siirto);
+		}
 	}
 	evt.Skip();
 }
@@ -168,6 +202,14 @@ void ristinollaIkkuna::aloita_alusta(wxCommandEvent& evt) {
 	}
 	ristinolla.aloita_alusta();
 	vuororuutu->SetLabel(vakiot.MERKIT[ristinolla.vuorossa]);
+
+	// jos AI aloittaa, sen siirto maaraytynee tassa
+	if (ai_moodi == 0)
+	{
+		int siirto = siirto_arvon_perusteella(ristinolla);
+		siirra(siirto);
+	}
+
 	evt.Skip();
 }
 
@@ -216,7 +258,9 @@ void ristinollaIkkuna::ok_asetukset(wxCommandEvent& evt) {
 	leveys = wxAtoi(asetusikkuna->leveys_teksti->GetValue());
 	korkeus = wxAtoi(asetusikkuna->korkeus_teksti->GetValue());
 	vier_lkm = wxAtoi(asetusikkuna->vier_teksti->GetValue());
-	if (korkeus > 0 && leveys > 0 && vier_lkm > 0)
+	// ei sallita 1x1-peliruutuja
+	// pitaako asettaa maksimi?
+	if (korkeus > 1 && leveys > 1 && vier_lkm > 1)
 	{
 		asetusikkuna->Destroy();
 		muuta_asetuksia(leveys, korkeus, vier_lkm);

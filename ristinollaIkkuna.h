@@ -14,6 +14,9 @@ public:
 	wxTextCtrl* korkeus_teksti = nullptr;
 	wxTextCtrl* vier_teksti = nullptr;
 
+	wxCheckBox* ai_paalla_check = nullptr;
+	wxRadioBox* ai_valinta = nullptr;
+
 	wxButton* ok_painike = nullptr;
 	wxButton* peru_painike = nullptr;
 
@@ -25,6 +28,7 @@ public:
 class ristinollaIkkuna : public wxFrame
 {
 public:
+	// GUI-juttuja
 	AsetusIkkuna* asetusikkuna = nullptr;
 	wxMenuBar* valikko = nullptr;
 	wxBoxSizer* sizer = nullptr;
@@ -33,6 +37,9 @@ public:
 	wxBoxSizer* ruudukko = nullptr;
 	wxPanel* statusrivi = nullptr;
 	wxButton* vuororuutu = nullptr;
+
+	// pelijuttuja
+	int ai_moodi;  // pelaako AI ristilla (0), nollalla (1) vai ei ollenkaan (-1)
 	Vakiot vakiot;  // = Vakiot(3, 3, 3);  // 24, 16, 5
 	//Ristinollapeli ristinolla;
 	Ristinolla ristinolla;
@@ -41,7 +48,7 @@ public:
 	void muuta_asetuksia(int leveys, int korkeus, int vier_lkm);
 	//void tallenna_asetukset();
 	//void lataa_asetukset();
-	void siirra(int ruutu);
+	bool siirra(int ruutu);
 	void painallus(wxCommandEvent& evt);
 	void aloita_alusta();
 	void aloita_alusta(wxCommandEvent& evt);

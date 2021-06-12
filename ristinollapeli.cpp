@@ -689,6 +689,11 @@ int Ristinolla::arvo() {
 			 rn.kumoa_siirto();
 		 }
 	 }
+	 // jos ei siirtoa saatu paatettya, valitaan se "satunnaisesti"
+	 if (siirto == -1)
+	 {
+		 siirto = ristinolla.vapaat[rand() % ristinolla.vapaat.size()];
+	 }
 	 return siirto;
  }
 
