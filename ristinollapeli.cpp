@@ -313,6 +313,18 @@ bool Rivi::on_pelattavissa() {
 	return true;
 }
 
+std::vector<int> Rivi::vapaat() {
+	std::vector<int> vapaat;
+	for (size_t i = 0; i < vakiot.VIER_LKM; i++)
+	{
+		if (status[i] == ' ')
+		{
+			vapaat.push_back(ruudut[i]);
+		}
+	}
+	return vapaat;
+}
+
 
 // turha oletusconstructor, ettei editori valita
 Rivit::Rivit() {
@@ -404,11 +416,16 @@ Ristinolla::Ristinolla(Vakiot vakio, std::vector<int> ristiruudut, std::vector<i
 	std::map<int, int> ristir_lkm, nollar_lkm;
 	merkki_lkm.push_back(ristir_lkm);
 	merkki_lkm.push_back(nollar_lkm);
+	std::map<int, std::set<int>> rivien_rlkm, rivien_nlkm;
+	rivien_mlkm.push_back(rivien_rlkm);
+	rivien_mlkm.push_back(rivien_nlkm);
 	for (int i = 0; i <= vakiot.VIER_LKM; i++)
 	{
 		// riveja joilla i nollaa tai ristia, on aluksi 0
 		merkki_lkm[0][i] = 0;
 		merkki_lkm[1][i] = 0;
+		rivien_mlkm[0][i] = std::set<int>({});
+		rivien_mlkm[1][i] = std::set<int>({});
 	}
 	for (size_t i = 0; i < rivit.aktiiviset_rivit.size(); i++)
 	{
@@ -419,6 +436,8 @@ Ristinolla::Ristinolla(Vakiot vakio, std::vector<int> ristiruudut, std::vector<i
 			// yksi lisaa riveja joilla on risti_lkm risteja, samoin riveja joilla nolla_lkm nollia
 			merkki_lkm[0][risti_lkm]++;
 			merkki_lkm[1][nolla_lkm]++;
+			rivien_mlkm[0][risti_lkm].insert(i);
+			rivien_mlkm[0][nolla_lkm].insert(i);
 		}
 	}
 }
@@ -439,7 +458,19 @@ bool Ristinolla::on_ratkaisematon() {
 }
 
 std::pair<bool, int> Ristinolla::voitti() {
-	if (merkki_lkm[0][vakiot.VIER_LKM] > 0)
+	if (rivien_mlkm[0][vakiot.VIER_LKM].empty() && rivien_mlkm[0][vakiot.VIER_LKM].empty())
+	{
+		return { false, -1 };
+	}
+	if (!(rivien_mlkm[0][vakiot.VIER_LKM].empty()))
+	{
+		return { true, 0 };
+	}
+	if (!(rivien_mlkm[1][vakiot.VIER_LKM].empty()))
+	{
+		return { true, 1 };
+	}
+	/*if (merkki_lkm[0][vakiot.VIER_LKM] > 0)
 	{
 		return { true, 0 };
 	}
@@ -447,23 +478,33 @@ std::pair<bool, int> Ristinolla::voitti() {
 	{
 		return { true, 1 };
 	}
-	return { false, -1 };
+	return { false, -1 };*/
 }
 
 bool Ristinolla::risti_voitti() {
-	if (merkki_lkm[0][vakiot.VIER_LKM] > 0)
+	if (rivien_mlkm[0][vakiot.VIER_LKM].empty())
+	{
+		return false;
+	}
+	return true;
+	/*if (merkki_lkm[0][vakiot.VIER_LKM] > 0)
 	{
 		return true;
 	}
-	return false;
+	return false;*/
 }
 
 bool Ristinolla::nolla_voitti() {
-	if (merkki_lkm[1][vakiot.VIER_LKM] > 0)
+	if (rivien_mlkm[1][vakiot.VIER_LKM].empty())
+	{
+		return false;
+	}
+	return true;
+	/*if (merkki_lkm[1][vakiot.VIER_LKM] > 0)
 	{
 		return true;
 	}
-	return false;
+	return false;*/
 }
 
 bool Ristinolla::onko_siirto_mahdollinen(int ruutu) {
@@ -502,10 +543,12 @@ void Ristinolla::tee_siirto(int ruutu) {
 			rivit.aktiiviset_rivit[indeksi] = false;
 			// poistetaan rivi myos merkki_lkm summauksesta
 			merkki_lkm[vuorossa][m_lkm - 1]--;
+			rivien_mlkm[vuorossa][m_lkm - 1].erase(indeksi);
 			// muistetaan myos toinen merkki
 			int toinen = (vuorossa + 1) % 2;
 			int m_lkm2 = rivit.rivit[indeksi].merkkien_lkm(toinen);
 			merkki_lkm[toinen][m_lkm2]--;
+			rivien_mlkm[vuorossa][m_lkm2].erase(indeksi);
 		}
 		// jos rivi aktiivinen
 		if (rivit.aktiiviset_rivit[indeksi])
@@ -513,6 +556,8 @@ void Ristinolla::tee_siirto(int ruutu) {
 			// yksi vahemman riveja, joissa m_lkm-1 merkkia, ja yksi enemman riveja, joissa m_lkm merkkia
 			merkki_lkm[vuorossa][m_lkm]++;
 			merkki_lkm[vuorossa][m_lkm - 1]--;
+			rivien_mlkm[vuorossa][m_lkm].insert(indeksi);
+			rivien_mlkm[vuorossa][m_lkm - 1].erase(indeksi);
 		}
 	}
 	//ja lopuksi vaihdetaan vuoroa
@@ -559,14 +604,19 @@ void Ristinolla::kumoa_siirto() {
 			int m_lkm = rivit.rivit[indeksi].merkkien_lkm(toinen);
 			merkki_lkm[toinen][m_lkm + 1]--;
 			merkki_lkm[toinen][m_lkm]++;
+			rivien_mlkm[toinen][m_lkm + 1].erase(indeksi);
+			rivien_mlkm[toinen][m_lkm].insert(indeksi);
+			
 		}
 		// jos poisto muuttaa rivin aktiiviseksi, eli siella on jaljella vain "vuorossa"-merkkeja
 		else if (rivit.rivit[indeksi].on_pelattavissa()  && !(rivit.aktiiviset_rivit[indeksi]))
 		{
 			rivit.aktiiviset_rivit[indeksi] = true;
 			merkki_lkm[toinen][0]++;
+			rivien_mlkm[toinen][0].insert(indeksi);
 			int m_lkm2 = rivit.rivit[indeksi].merkkien_lkm(vuorossa);
 			merkki_lkm[vuorossa][m_lkm2]++;
+			rivien_mlkm[vuorossa][m_lkm2].insert(indeksi);
 		}
 	}
 	//lopuksi vaihdetaan vuoro
@@ -583,12 +633,30 @@ void Ristinolla::aloita_alusta() {
 	{
 		merkki_lkm[0][i] = 0;
 		merkki_lkm[1][i] = 0;
+		rivien_mlkm[0][i].clear();
+		rivien_mlkm[1][i].clear();
 	}
 }
 
 int Ristinolla::arvo() {
 	int arvo = 0;
-	if (merkki_lkm[0][vakiot.VIER_LKM] > 0)
+	if (!(rivien_mlkm[0][vakiot.VIER_LKM].empty()))
+	{
+		return INT_MAX;
+	}
+	if (!(rivien_mlkm[1][vakiot.VIER_LKM].empty()))
+	{
+		return INT_MIN;
+	}
+	for (size_t i = 0; i < vakiot.VIER_LKM; i++)
+	{
+		int risti_rivi_lkm = rivien_mlkm[0][i].size();
+		int nolla_rivi_lkm = rivien_mlkm[1][i].size();
+		arvo += (risti_rivi_lkm - nolla_rivi_lkm) * pow(10, i - 1);
+	}
+	return arvo;
+
+	/*if (merkki_lkm[0][vakiot.VIER_LKM] > 0)
 	{
 		return INT_MAX;
 	}
@@ -600,230 +668,8 @@ int Ristinolla::arvo() {
 	{
 		arvo += (merkki_lkm[0][i] - merkki_lkm[1][i]) * pow(10, i - 1);
 	}
-	return arvo;
+	return arvo;*/
 }
 
 
-
-// AI-juttuja/pelin tallennus
-
-// kai sita voi aloitussiirron hardcodata (jonnekin keskelle)
-int aloitussiirto(Vakiot vakio) {
-	return (vakio.KORKEUS / 2) * vakio.LEVEYS + vakio.LEVEYS / 2;
-}
-
-// helppo algoritmi seuraavan siirron paattamiseen
- int siirto_arvon_perusteella(Ristinolla ristinolla) {
-	 int siirto = -1;
-	 // luodaan uusi ristinolla, jolla leikkia
-	 Ristinolla rn(ristinolla.vakiot, ristinolla.ristit, ristinolla.nollat);
-	 // ristipelaaja maksimoi arvoa, nollapelaaja minimoi
-	 if (rn.vuorossa == 0)
-	 {
-		 int maxmin = INT_MIN;
-		 for (int i = 0; i < rn.vapaat.size(); i++)
-		 {
-			 int min = INT_MAX;
-			 int pot_siirto = rn.vapaat[i];
-			 rn.tee_siirto(pot_siirto);
-			 // jos voitettiin, niin se siita
-			 if (rn.merkki_lkm[0][rn.vakiot.VIER_LKM] > 0)
-			 {
-				 return pot_siirto;
-			 }
-			 // katsotaan kuinka hyva tilanne on vastustajan mahdollisten siirtojen jalkeen
-			 for (int j = 0; j < rn.vapaat.size(); j++)
-			 {
-				 rn.tee_siirto(rn.vapaat[j]);
-				 int tilannearvo = rn.arvo();
-				 if (tilannearvo < maxmin)
-				 {
-					 min = tilannearvo;
-					 rn.kumoa_siirto();
-					 break;
-				 }
-				 else if (tilannearvo < min)
-				 {
-					 min = tilannearvo;
-				 }
-				 rn.kumoa_siirto();
-			 }
-			 if (maxmin < min)
-			 {
-				 maxmin = min;
-				 siirto = pot_siirto;
-			 }
-			 rn.kumoa_siirto();
-		 }
-	 }
-	 else
-	 {
-		 int minmax = INT_MAX;
-		 for (int i = 0; i < rn.vapaat.size(); i++)
-		 {
-			 int max = INT_MIN;
-			 int pot_siirto = rn.vapaat[i];
-			 rn.tee_siirto(pot_siirto);
-			 // jos voitettiin, niin se siita
-			 if (rn.merkki_lkm[1][rn.vakiot.VIER_LKM] > 0)
-			 {
-				 return pot_siirto;
-			 }
-			 // katsotaan kuinka hyva tilanne on vastustajan mahdollisten siirtojen jalkeen
-			 for (int j = 0; j < rn.vapaat.size(); j++)
-			 {
-				 rn.tee_siirto(rn.vapaat[j]);
-				 int tilannearvo = rn.arvo();
-				 if (minmax < tilannearvo)
-				 {
-					 max = tilannearvo;
-					 rn.kumoa_siirto();
-					 break;
-				 }
-				 else if (max < tilannearvo)
-				 {
-					 max = tilannearvo;
-				 }
-				 rn.kumoa_siirto();
-			 }
-			 if (max < minmax)
-			 {
-				 minmax = max;
-				 siirto = pot_siirto;
-			 }
-			 rn.kumoa_siirto();
-		 }
-	 }
-	 // jos ei siirtoa saatu paatettya, valitaan se "satunnaisesti"
-	 if (siirto == -1)
-	 {
-		 siirto = ristinolla.vapaat[rand() % ristinolla.vapaat.size()];
-	 }
-	 return siirto;
- }
-
-// onko tarvetta jarjestyksen vaihdolle?
- std::vector<int> tee_siirtolista(std::vector<int> ristit, std::vector<int> nollat) {
-	 std::vector<int> siirrot;
-	 for (int i = 0; i < ristit.size() - 1; i++)
-	 {
-		 siirrot.push_back(ristit[i]);
-		 siirrot.push_back(nollat[i]);
-	 }
-	 siirrot.push_back(ristit[ristit.size() - 1]);
-	 if (ristit.size() == nollat.size())
-	 {
-		 siirrot.push_back(nollat[nollat.size() - 1]);
-	 }
-	 return siirrot;
- }
-
- std::vector<std::vector<int>> ristit_ja_nollat(std::vector<int> siirrot) {
-	 std::vector<int> ristit, nollat;
-	 for (int i = 0; i < siirrot.size(); i++)
-	 {
-		 if (i % 2 == 0) {
-			 ristit.push_back(siirrot[i]);
-		 }
-		 else {
-			 nollat.push_back(siirrot[i]);
-		 }
-	 }
-	 std::vector<std::vector<int>> ristit_ja_nollat;
-	 ristit_ja_nollat.push_back(ristit);
-	 ristit_ja_nollat.push_back(nollat);
-	 return ristit_ja_nollat;
- }
-
-
-PelattuPeli::PelattuPeli() {
-
-}
-
-PelattuPeli::PelattuPeli(int tulos, std::vector<int> ristivektori, std::vector<int> nollavektori) {
-	lopputulos = tulos;
-	siirrot = tee_siirtolista(ristivektori, nollavektori);
-	//ristit = ristivektori;
-	//nollat = nollavektori;
-}
-
-
-std::vector<PelattuPeli> simuloi_peleja(Vakiot vakio, int lukum) {
-	std::vector<PelattuPeli> pelit;
-	if (lukum < 1)
-	{
-		return pelit;
-	}
-	for (int i = 0; i < lukum; i++)
-	{
-		Ristinolla ristinolla(vakio, {}, {});
-		bool peli_menossa = true;
-		while (peli_menossa)
-		{
-			// valitaan satunnainen vapaa ruutu
-			// parempi strategia olisi syyta keksia
-			int seuraava_ruutu = ristinolla.vapaat[rand() % ristinolla.vapaat.size()];
-			ristinolla.tee_siirto(seuraava_ruutu);
-			if (ristinolla.risti_voitti())
-			{
-				PelattuPeli peli(1, ristinolla.ristit, ristinolla.nollat);
-				pelit.push_back(peli);
-				peli_menossa = false;
-			}
-			else if (ristinolla.nolla_voitti())
-			{
-				PelattuPeli peli(-1, ristinolla.ristit, ristinolla.nollat);
-				pelit.push_back(peli);
-				peli_menossa = false;
-			}
-			else if (ristinolla.on_ratkaisematon())
-			{
-				PelattuPeli peli(0, ristinolla.ristit, ristinolla.nollat);
-				pelit.push_back(peli);
-				peli_menossa = false;
-			}
-		}
-		
-	}
-
-	return pelit;
-}
-
-
-// ja sitten bruteforce-funktio
-std::vector<PelattuPeli> pelaa_kaikki_pelit(Ristinolla ristinolla, std::vector<PelattuPeli> aiemmat_pelit) {
-	//std::vector<PelattuPeli> pelit;
-	//Ristinolla ristinolla(ristinolla0.vakiot, ristinolla0.ristit, ristinolla0.nollat);
-
-	// jos ei lisapelattavaa ole, tilanne on helppo
-	if (ristinolla.risti_voitti())
-	{
-		PelattuPeli peli(1, ristinolla.ristit, ristinolla.nollat);
-		aiemmat_pelit.push_back(peli);
-		return aiemmat_pelit;
-	}
-	else if (ristinolla.nolla_voitti())
-	{
-		PelattuPeli peli(-1, ristinolla.ristit, ristinolla.nollat);
-		aiemmat_pelit.push_back(peli);
-		return aiemmat_pelit;
-	}
-	else if (ristinolla.on_ratkaisematon())
-	{
-		PelattuPeli peli(0, ristinolla.ristit, ristinolla.nollat);
-		aiemmat_pelit.push_back(peli);
-		return aiemmat_pelit;
-	}
-	
-	// muuten joutuu kaymaan lapi siirtoja
-	for (auto i = ristinolla.vapaat.begin(); i != ristinolla.vapaat.end(); i++)
-	{
-		std::vector<int> ristivektori = ristinolla.ristit;
-		std::vector<int> nollavektori = ristinolla.nollat;
-		ristinolla.tee_siirto(*i);
-		aiemmat_pelit = pelaa_kaikki_pelit(ristinolla, aiemmat_pelit);
-		ristinolla.kumoa_siirto();
-		//ristinolla = Ristinolla(ristinolla.vakiot, ristivektori, nollavektori);
-	}
-	return aiemmat_pelit;
-}
+// AI-juttuja/pelin tallennus tiedostossa ai.cpp

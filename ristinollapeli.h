@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 #include <fstream>
 #include <cmath>
 #include <algorithm>
@@ -33,6 +34,7 @@ public:
 	int merkkien_lkm(int merkki_indeksi);
 	bool sopii();
 	bool on_pelattavissa();
+	std::vector<int> vapaat();
 };
 
 class Rivit {
@@ -60,6 +62,8 @@ public:
 	Rivit rivit;
 	// merkki_lkm[0][i] on niiden (aktiivisten) rivien lkm, joissa on i ristia
 	std::vector<std::map<int, int>> merkki_lkm;
+	// rivien_mlkm[0][i] sisaltaa niiden rivien indeksit, joissa on i ristia
+	std::vector<std::map<int, std::set<int>>> rivien_mlkm;
 	Ristinolla();
 	Ristinolla(Vakiot vakio, std::vector<int> ristiruudut, std::vector<int> nollaruudut);
 	bool on_ratkaisematon();
@@ -102,8 +106,13 @@ int etsi_indeksi(int luku, std::vector<int> vektori);
 
 
 // AI-juttuja/pelin tallennus
+int kay_siirrot_lapi(Ristinolla ristinolla);
 int aloitussiirto(Vakiot vakio);
 int siirto_arvon_perusteella(Ristinolla ristinolla);
+std::vector<int> siirto_arvon_perusteella_r(Ristinolla ristinolla, int siirto_lkm);
+std::vector<int> siirto_arvon_perusteella_r0(Ristinolla ristinolla, int siirto_lkm, int nyk_arvo);
+int rekursiivinen_arvo(Ristinolla ristinolla, int siirto_lkm);
+int siirto_rek_arvon_perusteella(Ristinolla ristinolla, int siirto_lkm);
 
 
 class PelattuPeli {

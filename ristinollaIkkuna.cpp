@@ -13,7 +13,7 @@ AsetusIkkuna::AsetusIkkuna() : wxFrame(nullptr, wxID_ANY, "Asetukset", wxDefault
 
 }
 
-AsetusIkkuna::AsetusIkkuna(std::map<std::string, int> asetukset) : wxFrame(nullptr, wxID_ANY, "Asetukset", wxDefaultPosition, wxDefaultSize)
+AsetusIkkuna::AsetusIkkuna(std::map<std::string, int> asetukset) : wxFrame(nullptr, wxID_ANY, "Asetukset", wxDefaultPosition, wxSize(400, 300))
 {
 	std::string leveys_str = std::to_string(asetukset["leveys"]);
 	wxBoxSizer* rivi1 = new wxBoxSizer(wxHORIZONTAL);
@@ -52,7 +52,10 @@ AsetusIkkuna::AsetusIkkuna(std::map<std::string, int> asetukset) : wxFrame(nullp
 	}
 	rivi4->Add(ai_paalla_check, 0);
 
-	wxBoxSizer* rivi5 = new wxBoxSizer(wxHORIZONTAL);
+	wxStaticText* ai_vali = new wxStaticText(this, wxID_ANY, "\t");
+	rivi4->Add(ai_vali, 0);
+
+	//wxBoxSizer* rivi5 = new wxBoxSizer(wxHORIZONTAL);
 	wxString vaihtoehdot[] = { "Risti", "Nolla" };
 	ai_valinta = new wxRadioBox(this, wxID_ANY, "AI-pelaajan puoli", wxDefaultPosition, wxDefaultSize, 2, vaihtoehdot);
 	if (!(ai_paalla_check->IsChecked()))
@@ -65,7 +68,7 @@ AsetusIkkuna::AsetusIkkuna(std::map<std::string, int> asetukset) : wxFrame(nullp
 		ai_valinta->SetSelection(1);
 	}
 	// muuten kai oletuksena 0 on valittu?
-	rivi5->Add(ai_valinta, 0);
+	rivi4->Add(ai_valinta, 0);
 
 	// satunnainen rivi
 	wxBoxSizer* rivi6_vali = new wxBoxSizer(wxHORIZONTAL);
@@ -83,8 +86,8 @@ AsetusIkkuna::AsetusIkkuna(std::map<std::string, int> asetukset) : wxFrame(nullp
 	sizer->Add(rivi2, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 10);
 	sizer->Add(rivi3, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 10);
 	sizer->Add(rivi3_vali, 0, wxEXPAND, 10);
-	sizer->Add(rivi4, 0, wxEXPAND, 10);
-	sizer->Add(rivi5, 0, wxEXPAND, 10);
+	sizer->Add(rivi4, 0, wxALIGN_CENTER, 10);
+	//sizer->Add(rivi5, 0, wxEXPAND, 10);
 	sizer->Add(rivi6_vali, 0, wxEXPAND, 10);
 	sizer->Add(rivi7, 0, wxALIGN_CENTER | wxBOTTOM, 10);
 
@@ -134,6 +137,7 @@ ristinollaIkkuna::ristinollaIkkuna() : wxFrame(nullptr, wxID_ANY, "Ristinolla", 
 
 	// ai_moodi pitaisi ladata asetustiedostosta
 	//ai_moodi = 0; asetukset["ai_moodi"]
+	ennakoitujen_siirtojen_lkm = 1;
 	//ristinolla = Ristinollapeli(vakiot);
 	ristinolla = Ristinolla(vakiot, {}, {});
 	//painike = new wxButton(this, wxID_ANY, "Click this", wxPoint(10, 10), wxSize(150, 50));
@@ -167,6 +171,8 @@ ristinollaIkkuna::ristinollaIkkuna() : wxFrame(nullptr, wxID_ANY, "Ristinolla", 
 	if (asetukset["ai_moodi"] == 0)
 	{
 		//int siirto = siirto_arvon_perusteella(ristinolla);
+		//int siirto = siirto_arvon_perusteella_e(ristinolla, ennakoitujen_siirtojen_lkm, 0)[0];
+		//int siirto = siirto_rek_arvon_perusteella(ristinolla, ennakoitujen_siirtojen_lkm);
 		int siirto = aloitussiirto(vakiot);
 		painikkeet[siirto]->SetLabel(vakiot.MERKIT[ristinolla.vuorossa]);
 		painikkeet[siirto]->Enable(false);
@@ -222,6 +228,8 @@ void ristinollaIkkuna::painallus(wxCommandEvent& evt) {
 		if (!alusta && asetukset["ai_moodi"] != -1)
 		{
 			int siirto = siirto_arvon_perusteella(ristinolla);
+			//int siirto = siirto_arvon_perusteella_r(ristinolla, ennakoitujen_siirtojen_lkm)[0];
+			//int siirto = siirto_rek_arvon_perusteella(ristinolla, ennakoitujen_siirtojen_lkm);
 			siirra(siirto);
 		}
 	}
@@ -241,6 +249,8 @@ void ristinollaIkkuna::aloita_alusta() {
 	if (asetukset["ai_moodi"] == 0)
 	{
 		//int siirto = siirto_arvon_perusteella(ristinolla);
+		// int siirto = siirto_arvon_perusteella_e(ristinolla, ennakoitujen_siirtojen_lkm, 0)[0];
+		//int siirto = siirto_rek_arvon_perusteella(ristinolla, ennakoitujen_siirtojen_lkm);
 		int siirto = aloitussiirto(vakiot);
 		siirra(siirto);
 	}
@@ -259,6 +269,8 @@ void ristinollaIkkuna::aloita_alusta(wxCommandEvent& evt) {
 	if (asetukset["ai_moodi"] == 0)
 	{
 		//int siirto = siirto_arvon_perusteella(ristinolla);
+		// int siirto = siirto_arvon_perusteella_e(ristinolla, ennakoitujen_siirtojen_lkm, 0)[0];
+		//int siirto = siirto_rek_arvon_perusteella(ristinolla, ennakoitujen_siirtojen_lkm);
 		int siirto = aloitussiirto(vakiot);
 		siirra(siirto);
 	}
@@ -287,6 +299,9 @@ void ristinollaIkkuna::muuta_asetuksia(int leveys, int korkeus, int vier_lkm) {
 	
 	tallenna_asetukset(leveys, korkeus, vier_lkm, asetukset["ai_moodi"]);
 	// ja sitten uutta kehiin!
+	asetukset["leveys"] = leveys;
+	asetukset["korkeus"] = korkeus;
+	asetukset["vier_lkm"] = vier_lkm;
 	vakiot = Vakiot(leveys, korkeus, vier_lkm);
 	ristinolla = Ristinolla(vakiot, {}, {});
 	painikkeet = new wxButton * [vakiot.KORKEUS * vakiot.LEVEYS];
