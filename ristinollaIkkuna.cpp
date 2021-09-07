@@ -137,9 +137,9 @@ ristinollaIkkuna::ristinollaIkkuna() : wxFrame(nullptr, wxID_ANY, "Ristinolla", 
 
 	// ai_moodi pitaisi ladata asetustiedostosta
 	//ai_moodi = 0; asetukset["ai_moodi"]
-	ennakoitujen_siirtojen_lkm = 1;
-	//ristinolla = Ristinollapeli(vakiot);
-	ristinolla = Ristinolla(vakiot, {}, {});
+	ennakoitujen_siirtojen_lkm = 4;
+	ristinolla = Ristinolla_OG(vakiot, {}, {});
+	//ristinolla = Ristinolla(vakiot, {}, {});
 	//painike = new wxButton(this, wxID_ANY, "Click this", wxPoint(10, 10), wxSize(150, 50));
 	painikkeet = new wxButton * [vakiot.KORKEUS * vakiot.LEVEYS];
 	grid = new wxGridSizer(vakiot.KORKEUS, vakiot.LEVEYS, 0, 0);
@@ -227,8 +227,11 @@ void ristinollaIkkuna::painallus(wxCommandEvent& evt) {
 		// AI siirtaa, jos peli ei ole ohi, ja pelataan AI:ta vastaan
 		if (!alusta && asetukset["ai_moodi"] != -1)
 		{
+			// ai katsoo viela pelaajan seuraavan siirron
 			int siirto = siirto_arvon_perusteella(ristinolla);
+			// jostain syysta tama on paljon hitaampi
 			//int siirto = siirto_arvon_perusteella_r(ristinolla, ennakoitujen_siirtojen_lkm)[0];
+			// tama ei oikein toimi
 			//int siirto = siirto_rek_arvon_perusteella(ristinolla, ennakoitujen_siirtojen_lkm);
 			siirra(siirto);
 		}

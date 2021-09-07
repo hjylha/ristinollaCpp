@@ -51,7 +51,8 @@ public:
 	std::vector<std::vector<int>> missa_riveissa_ruutu_on(int ruutu);
 };
 
-class Ristinolla {
+class Ristinolla_OG
+{
 public:
 	Vakiot vakiot;
 	std::vector<int> vapaat;
@@ -59,13 +60,44 @@ public:
 	std::vector<int> nollat;
 	std::vector<int> siirrot;
 	int vuorossa;
+
+	Ristinolla_OG();
+	Ristinolla_OG(Vakiot vakio, std::vector<int> ristiruudut, std::vector<int> nollaruudut);
+
+	bool on_ratkaisematon();
+	bool risti_voitti();
+	bool nolla_voitti();
+	std::pair<bool, int> voitti();
+	bool onko_siirto_mahdollinen(int ruutu);
+	void tee_siirto(int ruutu);
+	void kumoa_siirto();
+	void aloita_alusta();
+	std::vector<char> status();
+
+	std::pair<bool, int> merkki_lkm_rivilla(int alkuruutu, std::string suunta);
+	int arvo();
+	std::pair<bool, int> onko_ruudun_etaisyys_pelista_pienempi(int ruutu, int ref_etaisyys);
+	std::vector<int> priorisoi_ruudut();
+};
+
+class Ristinolla : public Ristinolla_OG {
+public:
+	//Vakiot vakiot;
+	//std::vector<int> vapaat;
+	//std::vector<int> ristit;
+	//std::vector<int> nollat;
+	//std::vector<int> siirrot;
+	//int vuorossa;
+	//uudet ominaisuudet
 	Rivit rivit;
 	// merkki_lkm[0][i] on niiden (aktiivisten) rivien lkm, joissa on i ristia
 	std::vector<std::map<int, int>> merkki_lkm;
 	// rivien_mlkm[0][i] sisaltaa niiden rivien indeksit, joissa on i ristia
 	std::vector<std::map<int, std::set<int>>> rivien_mlkm;
+
 	Ristinolla();
 	Ristinolla(Vakiot vakio, std::vector<int> ristiruudut, std::vector<int> nollaruudut);
+
 	bool on_ratkaisematon();
 	std::pair<bool, int> voitti();
 	bool risti_voitti();
@@ -100,16 +132,24 @@ bool onko_ruudussa_risti(int ruutu, std::vector<int> ristit);
 bool onko_ruudussa_nolla(int ruutu, std::vector<int> nollat);
 bool onko_ruutu_vapaa(int ruutu, std::vector<int> ristit, std::vector<int> nollat);
 std::vector<int> vapaat_ruudut(Vakiot vakiot, std::vector<int> ristit, std::vector<int> nollat);
+int is_ruutu_rivilla(int i, int alkuruutu, std::string suunta, Vakiot vakio);
 // jarjestettyjen vektorien operaatioita
 std::vector<int> lisaa_ruutu(int ruutu, std::vector<int> vektori);
 int etsi_indeksi(int luku, std::vector<int> vektori);
+std::vector<std::pair<int, int>> lisaa_pari_toisen_luvun_mukaan(std::pair<int, int> pari, std::vector<std::pair<int, int>> vektori);
+int etsi_indeksi_toisen_luvun_mukaan(std::pair<int, int> pari, std::vector<std::pair<int, int>> vektori);
+
 
 
 // AI-juttuja/pelin tallennus
-int kay_siirrot_lapi(Ristinolla ristinolla);
+std::vector<int> priorisoi_vapaat(Ristinolla ristinolla);
+int kay_siirrot_lapi(Ristinolla ristinolla, int siirto_lkm, int nyk_arvo);
 int aloitussiirto(Vakiot vakio);
 int siirto_arvon_perusteella(Ristinolla ristinolla);
+int siirto_arvon_perusteella(Ristinolla_OG ristinolla);
+std::vector<int> siirto_arvon_perusteella_r(Ristinolla_OG ristinolla, int siirto_lkm);
 std::vector<int> siirto_arvon_perusteella_r(Ristinolla ristinolla, int siirto_lkm);
+std::vector<int> siirto_arvon_perusteella_r0(Ristinolla_OG ristinolla, int siirto_lkm, int nyk_arvo);
 std::vector<int> siirto_arvon_perusteella_r0(Ristinolla ristinolla, int siirto_lkm, int nyk_arvo);
 int rekursiivinen_arvo(Ristinolla ristinolla, int siirto_lkm);
 int siirto_rek_arvon_perusteella(Ristinolla ristinolla, int siirto_lkm);

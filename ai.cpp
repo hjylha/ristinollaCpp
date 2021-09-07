@@ -2,6 +2,48 @@
 #include "ristinollapeli.h"
 
 
+std::vector<int> priorisoi_vapaat(Ristinolla ristinolla) {
+	std::vector<int> jarjestys;
+	int v1 = ristinolla.vuorossa;
+	int v2 = (v1 + 1) % 2;
+	for (int i = ristinolla.vakiot.VIER_LKM - 1; i >= 0; i--)
+	{
+		if (!(ristinolla.rivien_mlkm[v1][i].empty()))
+		{
+			for (auto j = ristinolla.rivien_mlkm[v1][i].begin(); j != ristinolla.rivien_mlkm[v1][i].end(); j++)
+			{
+				std::vector<int> vapaita = ristinolla.rivit.rivit[*j].vapaat();
+				for (size_t k = 0; k < vapaita.size(); k++)
+				{
+					auto itr = find(jarjestys.begin(), jarjestys.end(), vapaita[k]);
+					if (itr == jarjestys.end())
+					{
+						jarjestys.push_back(vapaita[k]);
+					}
+				}
+			}
+		}
+		
+		if (!(ristinolla.rivien_mlkm[v2][i].empty()))
+		{
+			for (auto j = ristinolla.rivien_mlkm[v2][i].begin(); j != ristinolla.rivien_mlkm[v2][i].end(); j++)
+			{
+				std::vector<int> vapaita = ristinolla.rivit.rivit[*j].vapaat();
+				for (size_t k = 0; k < vapaita.size(); k++)
+				{
+					auto itr = find(jarjestys.begin(), jarjestys.end(), vapaita[k]);
+					if (itr == jarjestys.end())
+					{
+						jarjestys.push_back(vapaita[k]);
+					}
+				}
+			}
+		}
+		
+	}
+	return jarjestys;
+}
+
 int kay_siirrot_lapi(Ristinolla ristinolla, int siirto_lkm, int nyk_arvo) {
 	int vert_arvo = ristinolla.vuorossa == 1 ? INT_MAX : INT_MIN;
 	for (size_t i = 0; i < ristinolla.vapaat.size(); i++)
@@ -35,6 +77,74 @@ int kay_siirrot_lapi(Ristinolla ristinolla, int siirto_lkm, int nyk_arvo) {
 // kai sita voi aloitussiirron hardcodata (jonnekin keskelle)
 int aloitussiirto(Vakiot vakio) {
 	return (vakio.KORKEUS / 2) * vakio.LEVEYS + vakio.LEVEYS / 2;
+}
+
+// helppo algoritmi seuraavan siirron paattamiseen
+int siirto_arvon_perusteella(Ristinolla_OG ristinolla) {
+	int siirto = -1;
+	// luodaan uusi ristinolla, jolla leikkia
+	Ristinolla_OG rn(ristinolla.vakiot, ristinolla.ristit, ristinolla.nollat);
+	int vuoro = rn.vuorossa;
+	//int toinen = (rn.vuorossa + 1) % 2;
+	int alkuarvo = !vuoro ? INT_MIN : INT_MAX;
+	int arvo = alkuarvo;
+	std::vector<int> siirrot = rn.priorisoi_ruudut();
+	for (int i = 0; i < siirrot.size(); i++)
+	{
+		int pot_siirto = siirrot[i];
+		int siirron_arvo = !vuoro ? INT_MAX : INT_MIN;
+		rn.tee_siirto(pot_siirto);
+		// jos tuli voitto, niin ok siirto
+		if (rn.voitti().first)
+		{
+			return pot_siirto;
+		}
+		// muuten katsotaan vastauksia
+		std::vector<int> siirrot2 = rn.priorisoi_ruudut();
+		for (int j = 0; j < siirrot2.size(); j++)
+		{
+			rn.tee_siirto(siirrot2[j]);
+			
+			// tuliko tappio?
+			if (rn.voitti().first)
+			{
+				siirron_arvo = alkuarvo;
+				rn.kumoa_siirto();
+				break;
+				// kai tappio pitaa yrittaa estaa
+				// sen voi tehda myos voittamalla
+				//return siirrot2[j];
+				
+			}
+			int arvo_nyt = rn.arvo();
+			// jos vastustajan siirron jalkeen tilanne on huono, ei tutkita vastustajan muita vastausmahdollisuuksia
+			if ((!vuoro && arvo_nyt < arvo) || vuoro && arvo < arvo_nyt)
+			{
+				rn.kumoa_siirto();
+				siirron_arvo = arvo_nyt;
+				break;
+			}
+			// vertaillaan muihin vastasiirtoihin
+			if ((!vuoro && arvo_nyt < siirron_arvo) || (vuoro && siirron_arvo < arvo_nyt))
+			{
+				siirron_arvo = arvo_nyt;
+			}
+			rn.kumoa_siirto();
+		}
+		// risti (vuoro=0) maksimoi, nolla (vuoro=1) minimoi
+		if ((!vuoro && siirron_arvo > arvo) || (vuoro && siirron_arvo < arvo))
+		{
+			arvo = siirron_arvo;
+			siirto = pot_siirto;
+		}
+		rn.kumoa_siirto();
+	}
+	// jos ei sopivaa siirtoa loydy, niin valitaan satunnaisesti
+	if (siirto == -1)
+	{
+		return ristinolla.vapaat[rand() % ristinolla.vapaat.size()];
+	}
+	return siirto;
 }
 
 // helppo algoritmi seuraavan siirron paattamiseen
@@ -174,6 +284,72 @@ int siirto_arvon_perusteella(Ristinolla ristinolla) {
 	return siirto;
 }
 
+std::vector<int> siirto_arvon_perusteella_r(Ristinolla_OG ristinolla, int siirto_lkm) {
+	Ristinolla_OG rn(ristinolla.vakiot, ristinolla.ristit, ristinolla.nollat);
+	int alkuarvo = rn.vuorossa == 0 ? INT_MIN : INT_MAX;
+
+	std::vector<int> siirto_ja_arvo = siirto_arvon_perusteella_r0(rn, siirto_lkm, alkuarvo);
+	// jos ei loydy siirtoa, valitaan se satunnaisesti
+	if (siirto_ja_arvo[0] == -1)
+	{
+		siirto_ja_arvo[0] = ristinolla.vapaat[rand() % ristinolla.vapaat.size()];
+	}
+	return siirto_ja_arvo;
+}
+
+std::vector<int> siirto_arvon_perusteella_r0(Ristinolla_OG ristinolla, int siirto_lkm, int nyk_arvo) {
+	std::vector<int> siirto_ja_arvo = { -1, nyk_arvo };
+	if (siirto_lkm <= 0)
+	{
+		siirto_ja_arvo[1] = ristinolla.arvo();
+		return siirto_ja_arvo;
+	}
+
+	int toinen = (ristinolla.vuorossa + 1) % 2;
+	std::vector<int> jarj_vapaat = ristinolla.priorisoi_ruudut();
+	for (size_t i = 0; i < jarj_vapaat.size(); i++)
+	{
+		int vert_arvo = ristinolla.vuorossa == 0 ? INT_MAX : INT_MIN;
+		int pot_siirto = jarj_vapaat[i];
+		ristinolla.tee_siirto(pot_siirto);
+		if (ristinolla.voitti().first)
+		{
+			siirto_ja_arvo[0] = pot_siirto;
+			siirto_ja_arvo[1] = ristinolla.vuorossa == 0 ? INT_MAX : INT_MIN;
+			return siirto_ja_arvo;
+		}
+
+		std::vector<int> vapaita2 = ristinolla.priorisoi_ruudut();
+		for (size_t j = 0; j < vapaita2.size(); j++)
+		{
+			ristinolla.tee_siirto(vapaita2[j]);
+			int testi = siirto_lkm - 1;
+			std::vector<int> testivektori = siirto_arvon_perusteella_r0(ristinolla, testi, nyk_arvo);
+			//int tilannearvo = siirto_arvon_perusteella_r0(rn, testi, nyk_arvo)[1];
+			int tilannearvo = testivektori[1];
+			if ((ristinolla.vuorossa == 0 && tilannearvo < nyk_arvo) || (ristinolla.vuorossa == 1 && nyk_arvo < tilannearvo))
+			{
+				vert_arvo = tilannearvo;
+				ristinolla.kumoa_siirto();
+				break;
+			}
+			if ((ristinolla.vuorossa == 0 && tilannearvo < vert_arvo) || (ristinolla.vuorossa == 1 && vert_arvo < tilannearvo))
+			{
+				vert_arvo = tilannearvo;
+			}
+			ristinolla.kumoa_siirto();
+		}
+
+		ristinolla.kumoa_siirto();
+		if ((ristinolla.vuorossa == 0 && siirto_ja_arvo[1] < vert_arvo) || (ristinolla.vuorossa == 1 && vert_arvo < siirto_ja_arvo[1]))
+		{
+			siirto_ja_arvo[0] = pot_siirto;
+			siirto_ja_arvo[1] = vert_arvo;
+		}
+	}
+	return siirto_ja_arvo;
+}
+
 std::vector<int> siirto_arvon_perusteella_r(Ristinolla ristinolla, int siirto_lkm) {
 	Ristinolla rn(ristinolla.vakiot, ristinolla.ristit, ristinolla.nollat);
 	int alkuarvo = rn.vuorossa == 0 ? INT_MIN : INT_MAX;
@@ -194,63 +370,29 @@ std::vector<int> siirto_arvon_perusteella_r0(Ristinolla rn, int siirto_lkm, int 
 		siirto_ja_arvo[1] = rn.arvo();
 		return siirto_ja_arvo;
 	}
-	
-	// jos voitto saadaan yhdella siirrolla, hyvahyva
-	if (!(rn.rivien_mlkm[rn.vuorossa][rn.vakiot.VIER_LKM - 1].empty()))
-	{
-		int rivi_index = *rn.rivien_mlkm[rn.vuorossa][rn.vakiot.VIER_LKM - 1].begin();
-		siirto_ja_arvo[0] = rn.rivit.rivit[rivi_index].vapaat()[0];
-		siirto_ja_arvo[1] = rn.vuorossa == 0 ? INT_MAX : INT_MIN;
-		return siirto_ja_arvo;
-	}
-	// jos tappio haamottaa, taytyy toimia
+
 	int toinen = (rn.vuorossa + 1) % 2;
-	if (!(rn.rivien_mlkm[toinen][rn.vakiot.VIER_LKM - 1].empty()))
-	{
-		int rivi_index = *(rn.rivien_mlkm[toinen][rn.vakiot.VIER_LKM - 1].begin());
-		int siirto = rn.rivit.rivit[rivi_index].vapaat()[0];
-		siirto_ja_arvo[0] = siirto;
-		int vert_arvo = rn.vuorossa == 0 ? INT_MAX : INT_MIN;
-		rn.tee_siirto(siirto);
-		//siirto_ja_arvo[1] = siirto_arvon_perusteella_r0(rn, siirto_lkm - 1, nyk_arvo)[1];
-		//siirto_ja_arvo[1] = kay_siirrot_lapi(rn, siirto_lkm - 1, nyk_arvo);
-		for (size_t i = 0; i < rn.vapaat.size(); i++)
-		{
-			rn.tee_siirto(rn.vapaat[i]);
-			int tilannearvo = siirto_arvon_perusteella_r0(rn, siirto_lkm - 1, nyk_arvo)[1];
-			if ((rn.vuorossa == 0 && tilannearvo < nyk_arvo) || (rn.vuorossa == 1 && nyk_arvo < tilannearvo))
-			{
-				rn.kumoa_siirto();
-				rn.kumoa_siirto();
-				siirto_ja_arvo[1] = tilannearvo;
-				return siirto_ja_arvo;
-			}
-			if ((rn.vuorossa == 0 && tilannearvo < vert_arvo) || (rn.vuorossa == 1 && vert_arvo < tilannearvo))
-			{
-				vert_arvo = tilannearvo;
-			}
-
-			rn.kumoa_siirto();
-		}
-		
-		rn.kumoa_siirto();
-		if ((rn.vuorossa == 0 && nyk_arvo < vert_arvo) || (rn.vuorossa == 1 && vert_arvo < nyk_arvo))
-		{
-			siirto_ja_arvo[1] = vert_arvo;
-		}
-		return siirto_ja_arvo;
-	}
-
-	for (size_t i = 0; i < rn.vapaat.size(); i++)
+	std::vector<int> jarj_vapaat = priorisoi_vapaat(rn);
+	for (size_t i = 0; i < jarj_vapaat.size(); i++)
 	{
 		int vert_arvo = rn.vuorossa == 0 ? INT_MAX : INT_MIN;
-		int pot_siirto = rn.vapaat[i];
+		int pot_siirto = jarj_vapaat[i];
 		rn.tee_siirto(pot_siirto);
-		// katsotaan vastustajan siirrot
-		for (size_t j = 0; j < rn.vapaat.size(); j++)
+		if (rn.voitti().first)
 		{
-			rn.tee_siirto(rn.vapaat[j]);
-			int tilannearvo = siirto_arvon_perusteella_r0(rn, siirto_lkm - 1, nyk_arvo)[1];
+			siirto_ja_arvo[0] = pot_siirto;
+			siirto_ja_arvo[1] = rn.vuorossa == 0 ? INT_MAX : INT_MIN;
+			return siirto_ja_arvo;
+		}
+
+		std::vector<int> vapaita2 = priorisoi_vapaat(rn);
+		for (size_t j = 0; j < vapaita2.size(); j++)
+		{
+			rn.tee_siirto(vapaita2[j]);
+			int testi = siirto_lkm - 1;
+			std::vector<int> testivektori = siirto_arvon_perusteella_r0(rn, testi, nyk_arvo);
+			//int tilannearvo = siirto_arvon_perusteella_r0(rn, testi, nyk_arvo)[1];
+			int tilannearvo = testivektori[1];
 			if ((rn.vuorossa == 0 && tilannearvo < nyk_arvo) || (rn.vuorossa == 1 && nyk_arvo < tilannearvo))
 			{
 				vert_arvo = tilannearvo;
@@ -263,7 +405,7 @@ std::vector<int> siirto_arvon_perusteella_r0(Ristinolla rn, int siirto_lkm, int 
 			}
 			rn.kumoa_siirto();
 		}
-		
+
 		rn.kumoa_siirto();
 		if ((rn.vuorossa == 0 && siirto_ja_arvo[1] < vert_arvo) || (rn.vuorossa == 1 && vert_arvo < siirto_ja_arvo[1]))
 		{
@@ -271,8 +413,86 @@ std::vector<int> siirto_arvon_perusteella_r0(Ristinolla rn, int siirto_lkm, int 
 			siirto_ja_arvo[1] = vert_arvo;
 		}
 	}
-
 	return siirto_ja_arvo;
+	
+	// jos voitto saadaan yhdella siirrolla, hyvahyva
+	/*if (!(rn.rivien_mlkm[rn.vuorossa][rn.vakiot.VIER_LKM - 1].empty()))
+	{
+		int rivi_index = *rn.rivien_mlkm[rn.vuorossa][rn.vakiot.VIER_LKM - 1].begin();
+		siirto_ja_arvo[0] = rn.rivit.rivit[rivi_index].vapaat()[0];
+		siirto_ja_arvo[1] = rn.vuorossa == 0 ? INT_MAX : INT_MIN;
+		return siirto_ja_arvo;
+	}*/
+	// jos tappio haamottaa, taytyy toimia
+	//int toinen = (rn.vuorossa + 1) % 2;
+	//if (!(rn.rivien_mlkm[toinen][rn.vakiot.VIER_LKM - 1].empty()))
+	//{
+	//	int rivi_index = *(rn.rivien_mlkm[toinen][rn.vakiot.VIER_LKM - 1].begin());
+	//	int siirto = rn.rivit.rivit[rivi_index].vapaat()[0];
+	//	siirto_ja_arvo[0] = siirto;
+	//	int vert_arvo = rn.vuorossa == 0 ? INT_MAX : INT_MIN;
+	//	rn.tee_siirto(siirto);
+	//	//siirto_ja_arvo[1] = siirto_arvon_perusteella_r0(rn, siirto_lkm - 1, nyk_arvo)[1];
+	//	//siirto_ja_arvo[1] = kay_siirrot_lapi(rn, siirto_lkm - 1, nyk_arvo);
+	//	for (size_t i = 0; i < rn.vapaat.size(); i++)
+	//	{
+	//		rn.tee_siirto(rn.vapaat[i]);
+	//		int tilannearvo = siirto_arvon_perusteella_r0(rn, siirto_lkm - 1, nyk_arvo)[1];
+	//		if ((rn.vuorossa == 0 && tilannearvo < nyk_arvo) || (rn.vuorossa == 1 && nyk_arvo < tilannearvo))
+	//		{
+	//			rn.kumoa_siirto();
+	//			rn.kumoa_siirto();
+	//			siirto_ja_arvo[1] = tilannearvo;
+	//			return siirto_ja_arvo;
+	//		}
+	//		if ((rn.vuorossa == 0 && tilannearvo < vert_arvo) || (rn.vuorossa == 1 && vert_arvo < tilannearvo))
+	//		{
+	//			vert_arvo = tilannearvo;
+	//		}
+
+	//		rn.kumoa_siirto();
+	//	}
+	
+		//rn.kumoa_siirto();
+		//if ((rn.vuorossa == 0 && nyk_arvo < vert_arvo) || (rn.vuorossa == 1 && vert_arvo < nyk_arvo))
+		//{
+			//siirto_ja_arvo[1] = vert_arvo;
+		//}
+		//return siirto_ja_arvo;
+	//}
+
+	//for (size_t i = 0; i < rn.vapaat.size(); i++)
+	//{
+	//	int vert_arvo = rn.vuorossa == 0 ? INT_MAX : INT_MIN;
+	//	int pot_siirto = rn.vapaat[i];
+	//	rn.tee_siirto(pot_siirto);
+	//	// katsotaan vastustajan siirrot
+	//	for (size_t j = 0; j < rn.vapaat.size(); j++)
+	//	{
+	//		rn.tee_siirto(rn.vapaat[j]);
+	//		int tilannearvo = siirto_arvon_perusteella_r0(rn, siirto_lkm - 1, nyk_arvo)[1];
+	//		if ((rn.vuorossa == 0 && tilannearvo < nyk_arvo) || (rn.vuorossa == 1 && nyk_arvo < tilannearvo))
+	//		{
+	//			vert_arvo = tilannearvo;
+	//			rn.kumoa_siirto();
+	//			break;
+	//		}
+	//		if ((rn.vuorossa == 0 && tilannearvo < vert_arvo) || (rn.vuorossa == 1 && vert_arvo < tilannearvo))
+	//		{
+	//			vert_arvo = tilannearvo;
+	//		}
+	//		rn.kumoa_siirto();
+	//	}
+	//	
+	//	rn.kumoa_siirto();
+	//	if ((rn.vuorossa == 0 && siirto_ja_arvo[1] < vert_arvo) || (rn.vuorossa == 1 && vert_arvo < siirto_ja_arvo[1]))
+	//	{
+	//		siirto_ja_arvo[0] = pot_siirto;
+	//		siirto_ja_arvo[1] = vert_arvo;
+	//	}
+	//}
+
+	//return siirto_ja_arvo;
 }
 
 // yritetaan maarittaa tilanteen arvo tutkimalla seuraavia siirtoja

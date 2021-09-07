@@ -47,8 +47,8 @@ public:
 	int ennakoitujen_siirtojen_lkm;
 	//int ai_moodi;  // pelaako AI ristilla (0), nollalla (1) vai ei ollenkaan (-1)
 	Vakiot vakiot;  // = Vakiot(3, 3, 3);  // 24, 16, 5
-	//Ristinollapeli ristinolla;
-	Ristinolla ristinolla;
+	Ristinolla_OG ristinolla;
+	//Ristinolla ristinolla;
 	ristinollaIkkuna();
 	~ristinollaIkkuna();
 	void muuta_asetuksia(int leveys, int korkeus, int vier_lkm);
