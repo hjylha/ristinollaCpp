@@ -1,5 +1,5 @@
 
-![Ristinollapeli](ristinolla.png)
+![Ristinollapeli](kuvat/ristinolla.png)
 
 
 * wxWidgets on tarpeen.
