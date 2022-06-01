@@ -194,12 +194,12 @@ bool ristinollaIkkuna::siirra(int ruutu) {
 	ristinolla.tee_siirto(ruutu);
 	vuororuutu->SetLabel(MERKIT[ristinolla.vuorossa]);
 	// tarkistetaan, onko peli ohi
-	if (ristinolla.risti_voitti())
+	if (ristinolla.vuorossa && ristinolla.risti_voitti())
 	{
 		alusta = true;
 		wxMessageBox("Risti voitti!!!!!");
 	}
-	else if (ristinolla.nolla_voitti())
+	else if (!ristinolla.vuorossa && ristinolla.nolla_voitti())
 	{
 		alusta = true;
 		wxMessageBox("Nolla voitti!!!!!");
