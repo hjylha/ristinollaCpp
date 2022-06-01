@@ -24,7 +24,7 @@ bool sopiiko_rivi(int ruutu_ja_suunta, Vakiot vakio)
 		return false;
 	}
 	// jos alkuruutu on alareunan lahella ja rivi menee alas
-	if ((vakio.KORKEUS - alkuruutu / vakio.KORKEUS < vakio.VIER_LKM) && (suunta == 0 || suunta == 2 || suunta == 3))
+	if ((vakio.KORKEUS - alkuruutu / vakio.LEVEYS < vakio.VIER_LKM) && (suunta == 0 || suunta == 2 || suunta == 3))
 	{
 		return false;
 	}
