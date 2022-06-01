@@ -72,17 +72,18 @@ bool Ristinolla0::nolla_voitti() {
 }
 
 Loppu Ristinolla0::voitti() {
-	if (on_ratkaisematon())
+	for (int i = 0; i < rivit.size(); i++)
 	{
-		return { false, 2 };
+		if (rivit[i].ristien_lkm == vakio.VIER_LKM)
+		{
+			return Loppu(true, 0);
+		}
+		if (rivit[i].nollien_lkm == vakio.VIER_LKM)
+		{
+			return Loppu(true, 1);
+		}
 	}
-	// edellinen vuoro: nolla
-	if (vuorossa == 0)
-	{
-		return { nolla_voitti(), 1 };
-	}
-	// edellinen vuoro: risti
-	return { risti_voitti(), 0 };
+	return Loppu(false, 2);
 }
 
 bool Ristinolla0::onko_siirto_mahdollinen(int ruutu) {
