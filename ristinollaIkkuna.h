@@ -1,7 +1,8 @@
 #pragma once
 
 #include "wx/wx.h"
-#include "ristinollapeli.h"
+#include "ai.h"
+#include <map>
 #include <iostream>
 #include <fstream>
 
@@ -46,8 +47,8 @@ public:
 	std::map<std::string, int> asetukset;
 	int ennakoitujen_siirtojen_lkm;
 	//int ai_moodi;  // pelaako AI ristilla (0), nollalla (1) vai ei ollenkaan (-1)
-	Vakiot vakiot;  // = Vakiot(3, 3, 3);  // 24, 16, 5
-	Ristinolla_OG ristinolla;
+	//Vakiot vakiot;  // = Vakiot(3, 3, 3);  // 24, 16, 5
+	Ristinolla0 ristinolla;
 	//Ristinolla ristinolla;
 	ristinollaIkkuna();
 	~ristinollaIkkuna();

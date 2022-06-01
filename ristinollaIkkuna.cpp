@@ -121,7 +121,7 @@ ristinollaIkkuna::ristinollaIkkuna() : wxFrame(nullptr, wxID_ANY, "Ristinolla", 
 {
 	//vakiot = Vakiot(12, 10, 5);
 	asetukset = lataa_asetukset();
-	vakiot = Vakiot(asetukset["leveys"], asetukset["korkeus"], asetukset["vier_lkm"]);
+	Vakiot vakiot = Vakiot(asetukset["leveys"], asetukset["korkeus"], asetukset["vier_lkm"]);
 
 	// asetusikkuna on olemassa, vaikkei ehka nakyvilla
 	asetusikkuna = new AsetusIkkuna(asetukset);
@@ -138,7 +138,8 @@ ristinollaIkkuna::ristinollaIkkuna() : wxFrame(nullptr, wxID_ANY, "Ristinolla", 
 	// ai_moodi pitaisi ladata asetustiedostosta
 	//ai_moodi = 0; asetukset["ai_moodi"]
 	ennakoitujen_siirtojen_lkm = 4;
-	ristinolla = Ristinolla_OG(vakiot, {}, {});
+	ristinolla = Ristinolla0(vakiot, {});
+	//ristinolla = Ristinolla_OG(vakiot, {}, {});
 	//ristinolla = Ristinolla(vakiot, {}, {});
 	//painike = new wxButton(this, wxID_ANY, "Click this", wxPoint(10, 10), wxSize(150, 50));
 	painikkeet = new wxButton * [vakiot.KORKEUS * vakiot.LEVEYS];
@@ -149,7 +150,7 @@ ristinollaIkkuna::ristinollaIkkuna() : wxFrame(nullptr, wxID_ANY, "Ristinolla", 
 	//teksti->AppendString
 	vuororuutu = new wxButton(statusrivi, wxID_ANY, "", wxPoint(100, 10), wxSize(30, 30));
 	vuororuutu->Enable(false);
-	vuororuutu->SetLabel(vakiot.MERKIT[ristinolla.vuorossa]);
+	vuororuutu->SetLabel(MERKIT[ristinolla.vuorossa]);
 	
 	for (int i = 0; i < vakiot.LEVEYS * vakiot.KORKEUS; i++)
 	{
@@ -174,10 +175,10 @@ ristinollaIkkuna::ristinollaIkkuna() : wxFrame(nullptr, wxID_ANY, "Ristinolla", 
 		//int siirto = siirto_arvon_perusteella_e(ristinolla, ennakoitujen_siirtojen_lkm, 0)[0];
 		//int siirto = siirto_rek_arvon_perusteella(ristinolla, ennakoitujen_siirtojen_lkm);
 		int siirto = aloitussiirto(vakiot);
-		painikkeet[siirto]->SetLabel(vakiot.MERKIT[ristinolla.vuorossa]);
+		painikkeet[siirto]->SetLabel(MERKIT[ristinolla.vuorossa]);
 		painikkeet[siirto]->Enable(false);
 		ristinolla.tee_siirto(siirto);
-		vuororuutu->SetLabel(vakiot.MERKIT[ristinolla.vuorossa]);
+		vuororuutu->SetLabel(MERKIT[ristinolla.vuorossa]);
 		// peli ei kai voi paattya yhteen siirtoon?
 	}
 }
@@ -188,10 +189,10 @@ ristinollaIkkuna::~ristinollaIkkuna() {
 
 bool ristinollaIkkuna::siirra(int ruutu) {
 	bool alusta = false;
-	painikkeet[ruutu]->SetLabel(vakiot.MERKIT[ristinolla.vuorossa]);
+	painikkeet[ruutu]->SetLabel(MERKIT[ristinolla.vuorossa]);
 	painikkeet[ruutu]->Enable(false);
 	ristinolla.tee_siirto(ruutu);
-	vuororuutu->SetLabel(vakiot.MERKIT[ristinolla.vuorossa]);
+	vuororuutu->SetLabel(MERKIT[ristinolla.vuorossa]);
 	// tarkistetaan, onko peli ohi
 	if (ristinolla.risti_voitti())
 	{
@@ -211,7 +212,7 @@ bool ristinollaIkkuna::siirra(int ruutu) {
 	// jos peli loppunut, deaktivoidaan painikkeet
 	if (alusta)
 	{
-		for (int i = 0; i < vakiot.LEVEYS * vakiot.KORKEUS; i++)
+		for (int i = 0; i < ristinolla.vakio.LEVEYS * ristinolla.vakio.KORKEUS; i++)
 		{
 			painikkeet[i]->Enable(false);
 		}
@@ -240,13 +241,13 @@ void ristinollaIkkuna::painallus(wxCommandEvent& evt) {
 }
 
 void ristinollaIkkuna::aloita_alusta() {
-	for (int i = 0; i < vakiot.LEVEYS * vakiot.KORKEUS; i++)
+	for (int i = 0; i < ristinolla.vakio.LEVEYS * ristinolla.vakio.KORKEUS; i++)
 	{
 		painikkeet[i]->SetLabel("");
 		painikkeet[i]->Enable(true);
 	}
 	ristinolla.aloita_alusta();
-	vuororuutu->SetLabel(vakiot.MERKIT[ristinolla.vuorossa]);
+	vuororuutu->SetLabel(MERKIT[ristinolla.vuorossa]);
 
 	// jos AI aloittaa, sen siirto maaraytynee tassa
 	if (asetukset["ai_moodi"] == 0)
@@ -254,19 +255,19 @@ void ristinollaIkkuna::aloita_alusta() {
 		//int siirto = siirto_arvon_perusteella(ristinolla);
 		// int siirto = siirto_arvon_perusteella_e(ristinolla, ennakoitujen_siirtojen_lkm, 0)[0];
 		//int siirto = siirto_rek_arvon_perusteella(ristinolla, ennakoitujen_siirtojen_lkm);
-		int siirto = aloitussiirto(vakiot);
+		int siirto = aloitussiirto(ristinolla.vakio);
 		siirra(siirto);
 	}
 }
 
 void ristinollaIkkuna::aloita_alusta(wxCommandEvent& evt) {
-	for (int i = 0; i < vakiot.LEVEYS * vakiot.KORKEUS; i++)
+	for (int i = 0; i < ristinolla.vakio.LEVEYS * ristinolla.vakio.KORKEUS; i++)
 	{
 		painikkeet[i]->SetLabel("");
 		painikkeet[i]->Enable(true);
 	}
 	ristinolla.aloita_alusta();
-	vuororuutu->SetLabel(vakiot.MERKIT[ristinolla.vuorossa]);
+	vuororuutu->SetLabel(MERKIT[ristinolla.vuorossa]);
 
 	// jos AI aloittaa, sen siirto maaraytynee tassa
 	if (asetukset["ai_moodi"] == 0)
@@ -274,7 +275,7 @@ void ristinollaIkkuna::aloita_alusta(wxCommandEvent& evt) {
 		//int siirto = siirto_arvon_perusteella(ristinolla);
 		// int siirto = siirto_arvon_perusteella_e(ristinolla, ennakoitujen_siirtojen_lkm, 0)[0];
 		//int siirto = siirto_rek_arvon_perusteella(ristinolla, ennakoitujen_siirtojen_lkm);
-		int siirto = aloitussiirto(vakiot);
+		int siirto = aloitussiirto(ristinolla.vakio);
 		siirra(siirto);
 	}
 
@@ -293,7 +294,7 @@ void ristinollaIkkuna::avaa_asetukset(wxCommandEvent& evt) {
 void ristinollaIkkuna::muuta_asetuksia(int leveys, int korkeus, int vier_lkm) {
 	// poistetaan vanhat kaiketi???
 	ruudukko->Clear();
-	for (int i = 0; i < vakiot.LEVEYS * vakiot.KORKEUS; i++)
+	for (int i = 0; i < ristinolla.vakio.LEVEYS * ristinolla.vakio.KORKEUS; i++)
 	{
 		painikkeet[i]->Destroy();
 	}
@@ -305,11 +306,11 @@ void ristinollaIkkuna::muuta_asetuksia(int leveys, int korkeus, int vier_lkm) {
 	asetukset["leveys"] = leveys;
 	asetukset["korkeus"] = korkeus;
 	asetukset["vier_lkm"] = vier_lkm;
-	vakiot = Vakiot(leveys, korkeus, vier_lkm);
-	ristinolla = Ristinolla(vakiot, {}, {});
-	painikkeet = new wxButton * [vakiot.KORKEUS * vakiot.LEVEYS];
-	grid = new wxGridSizer(vakiot.KORKEUS, vakiot.LEVEYS, 0, 0);
-	for (int i = 0; i < vakiot.LEVEYS * vakiot.KORKEUS; i++)
+	Vakiot vakiot = Vakiot(leveys, korkeus, vier_lkm);
+	ristinolla = Ristinolla0(vakiot, {});
+	painikkeet = new wxButton * [ristinolla.vakio.KORKEUS * ristinolla.vakio.LEVEYS];
+	grid = new wxGridSizer(ristinolla.vakio.KORKEUS, ristinolla.vakio.LEVEYS, 0, 0);
+	for (int i = 0; i < ristinolla.vakio.LEVEYS * ristinolla.vakio.KORKEUS; i++)
 	{
 		painikkeet[i] = new wxButton(this, 1000 + i);
 		grid->Add(painikkeet[i], 1, wxEXPAND | wxALL);
