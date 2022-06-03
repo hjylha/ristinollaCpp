@@ -3,6 +3,11 @@
 wxIMPLEMENT_APP(ristinollaOhjelma);
 
 bool ristinollaOhjelma::OnInit() {
+	if (!wxApp::OnInit())
+	{
+		return false;
+	}
+
 	ikkuna = new ristinollaIkkuna;
 	ikkuna->Show();
 

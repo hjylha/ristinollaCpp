@@ -9,7 +9,7 @@ private:
 	ristinollaIkkuna* ikkuna = nullptr;
 
 public:
-	virtual bool OnInit();
+	virtual bool OnInit() wxOVERRIDE;
 	int FilterEvent(wxEvent &evt);
 };
 
