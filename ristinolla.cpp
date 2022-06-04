@@ -108,31 +108,16 @@ Loppu Ristinolla0::voitti() {
 	}
 	else
 	{
-		for (auto& rivi_id : rivit_joissa_k_merkkia[vakio.VIER_LKM])
-		{
-			if (rivit[rivi_id].ristien_lkm == vakio.VIER_LKM)
-			{
-				return Loppu(true, 0);
-			}
-			return Loppu(true, 1);
-		}
-	}
-	/*for (int i = 0; i < rivit.size(); i++)
-	{
-		if (rivit[i].ristien_lkm == vakio.VIER_LKM)
+		if (rivit[*rivit_joissa_k_merkkia[vakio.VIER_LKM].begin()].ristien_lkm == vakio.VIER_LKM)
 		{
 			ohi_on = true;
 			voittaja = 0;
 			return Loppu(true, 0);
 		}
-		if (rivit[i].nollien_lkm == vakio.VIER_LKM)
-		{
-			ohi_on = true;
-			voittaja = 1;
-			return Loppu(true, 1);
-		}
+		ohi_on = true;
+		voittaja = 1;
+		return Loppu(true, 1);
 	}
-	return Loppu(false, 2);*/
 }
 
 bool Ristinolla0::onko_siirto_mahdollinen(int ruutu) {
