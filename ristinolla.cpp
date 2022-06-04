@@ -261,34 +261,52 @@ std::pair<bool, int> Ristinolla0::onko_ruudun_etaisyys_pelista_pienempi(int ruut
 
 std::vector<int> Ristinolla0::priorisoi_ruudut() {
 	std::vector<int> priorisoidut;
-	std::vector<int> ylijaama;
-	
-	for (int i = 0; i < ruudut.size(); i++)
-	{
-		if (ruudut[i] == 2)
-		{
-			std::pair<bool, int> eta = onko_ruudun_etaisyys_pelista_pienempi(i, vakio.VIER_LKM / 2 + 1);
-			if (eta.first)
-			{
-				priorisoidut.push_back(i);
-			}
-			else
-			{
-				ylijaama.push_back(i);
-			}
+	//std::vector<int> ylijaama;
 
+	for (int maara = vakio.VIER_LKM - 1; maara > 0; maara--)
+	{
+		if (!rivit_joissa_k_merkkia[maara].empty())
+		{
+			for (auto &rivi_id : rivit_joissa_k_merkkia[maara])
+			{
+				for (auto& ruutu : rivit[rivi_id].vapaat_ruudut())
+				{
+					if (std::find(priorisoidut.begin(), priorisoidut.end(), ruutu) == priorisoidut.end())
+					{
+						priorisoidut.push_back(ruutu);
+					}
+					
+				}
+			}
 		}
 	}
+	//
+	//for (int i = 0; i < ruudut.size(); i++)
+	//{
+	//	if (ruudut[i] == 2)
+	//	{
+	//		std::pair<bool, int> eta = onko_ruudun_etaisyys_pelista_pienempi(i, vakio.VIER_LKM / 2 + 1);
+	//		if (eta.first)
+	//		{
+	//			priorisoidut.push_back(i);
+	//		}
+	//		else
+	//		{
+	//			ylijaama.push_back(i);
+	//		}
 
-	// jos siina oli kaikki, ei tarvi tehda muuta
-	if (ylijaama.empty()) {
-		return priorisoidut;
-	}
-	// lisataan loput (tarvitaanko kaikki??)
-	for (int i = 0; i < ylijaama.size(); i++)
-	{
-		priorisoidut.push_back(ylijaama[i]);
-	}
+	//	}
+	//}
+
+	//// jos siina oli kaikki, ei tarvi tehda muuta
+	//if (ylijaama.empty()) {
+	//	return priorisoidut;
+	//}
+	//// lisataan loput (tarvitaanko kaikki??)
+	//for (int i = 0; i < ylijaama.size(); i++)
+	//{
+	//	priorisoidut.push_back(ylijaama[i]);
+	//}
 
 	return priorisoidut;
 

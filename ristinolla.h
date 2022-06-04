@@ -1,6 +1,7 @@
 # pragma once
 
 #include "setup.h"
+#include <algorithm>
 #include <cmath>
 #include <climits>
 #include <set>
