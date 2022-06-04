@@ -34,18 +34,23 @@ class Rivi {
 public:
     bool sopii;
 	std::vector<int> status;
+	std::vector<int> ruudut;
 	int ristien_lkm;
 	int nollien_lkm;
+
+	bool on_pelattavissa;
 
 	Rivi(Vakiot vakiot, int ruutu_ja_suunta);
 
 	int laske_ristien_lkm();
 	int laske_nollien_lkm();
-	bool on_pelattavissa();
+	bool onko_pelattavissa();
 
 	void tee_siirto(int paikkaindeksi, int vuoro);
 	void kumoa_siirto(int paikkaindeksi, int vuoro);
 	void tyhjenna();
+
+	std::vector<int> vapaat_ruudut();
 };
 
 

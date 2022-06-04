@@ -1,6 +1,11 @@
 # pragma once
 
 #include "setup.h"
+#include <cmath>
+#include <climits>
+#include <set>
+#include <unordered_set>
+
 
 struct Loppu {
 public:
@@ -17,6 +22,11 @@ public:
 	std::vector<Rivi> rivit;
 	std::vector<int> siirrot;
 	int vuorossa;
+
+	bool ohi_on;
+	int voittaja;
+
+	std::vector<std::unordered_set<int>> rivit_joissa_k_merkkia;
 
 	Ristinolla0();
 	Ristinolla0(Vakiot vakiot, std::vector<int> aiemmat_siirrot);

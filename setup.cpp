@@ -71,8 +71,10 @@ Rivi::Rivi(Vakiot vakiot, int ruutu_ja_suunta) {
 		{
 			// oletuksena tyhja ruutu
 			status.push_back(2);
+			ruudut.push_back(is_ruutu_rivilla(i, ruutu_ja_suunta, vakiot));
 		}
 	}
+	on_pelattavissa = sopii;
 	ristien_lkm = 0;
 	nollien_lkm = 0;
 }
@@ -101,7 +103,7 @@ int Rivi::laske_nollien_lkm() {
 	return nolla_lkm;
 }
 
-bool Rivi::on_pelattavissa() {
+bool Rivi::onko_pelattavissa() {
 	if (!sopii)
 	{
 		return false;
@@ -123,6 +125,10 @@ void Rivi::tee_siirto(int paikkaindeksi, int vuoro) {
 	{
 		nollien_lkm++;
 	}
+	if (on_pelattavissa && ristien_lkm > 0  && nollien_lkm > 0)
+	{
+		on_pelattavissa = false;
+	}
 }
 
 void Rivi::kumoa_siirto(int paikkaindeksi, int vuoro) {
@@ -135,15 +141,35 @@ void Rivi::kumoa_siirto(int paikkaindeksi, int vuoro) {
 	{
 		nollien_lkm--;
 	}
+	if (!on_pelattavissa && (ristien_lkm == 0 || nollien_lkm == 0))
+	{
+		on_pelattavissa = true;
+	}
 }
 
 void Rivi::tyhjenna() {
-	for (int i = 0; i < status.size(); i++)
+	if (sopii)
 	{
-		status[i] = 2;
+		for (int i = 0; i < status.size(); i++)
+		{
+			status[i] = 2;
+		}
+		on_pelattavissa = true;
 	}
 	ristien_lkm = 0;
 	nollien_lkm = 0;
+}
+
+std::vector<int> Rivi::vapaat_ruudut() {
+	std::vector<int> vapaat;
+	for (int i = 0; i < status.size(); i++)
+	{
+		if (status[i] == 2)
+		{
+			vapaat.push_back(ruudut[i]);
+		}
+	}
+	return vapaat;
 }
 
 
