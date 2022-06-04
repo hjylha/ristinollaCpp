@@ -83,6 +83,11 @@ int aloitussiirto(Vakiot vakio) {
 int siirto_arvon_perusteella(Ristinolla0 ristinolla) {
 	int siirto = -1;
 
+	if (!ristinolla.rivit_joissa_k_merkkia[ristinolla.vakio.VIER_LKM - 1].empty())
+	{
+		return ristinolla.rivit[*ristinolla.rivit_joissa_k_merkkia[ristinolla.vakio.VIER_LKM - 1].begin()].vapaat_ruudut()[0];
+	}
+
 	Ristinolla0 rn(ristinolla.vakio, ristinolla.siirrot);
 	int vuoro = rn.vuorossa;
 	//int toinen = (rn.vuorossa + 1) % 2;
