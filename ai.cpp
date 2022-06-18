@@ -1,6 +1,6 @@
 
 #include "ai.h"
-#include "ristinollapeli.h"
+
 
 
 /*std::vector<int> priorisoi_vapaat(Ristinolla ristinolla) {
@@ -93,10 +93,10 @@ int siirto_arvon_perusteella(Ristinolla0 ristinolla) {
 	//int toinen = (rn.vuorossa + 1) % 2;
 	int alkuarvo = !vuoro ? INT_MIN : INT_MAX;
 	int arvo = alkuarvo;
-	std::vector<int> siirrot = rn.priorisoi_ruudut();
-	for (int i = 0; i < siirrot.size(); i++)
+	std::vector<int> mahdolliset_siirrot = rn.priorisoi_ruudut();
+	for (int i = 0; i < mahdolliset_siirrot.size(); i++)
 	{
-		int pot_siirto = siirrot[i];
+		int pot_siirto = mahdolliset_siirrot[i];
 		int siirron_arvo = !vuoro ? INT_MAX : INT_MIN;
 		rn.tee_siirto(pot_siirto);
 		// jos tuli voitto, niin ok siirto
@@ -105,10 +105,10 @@ int siirto_arvon_perusteella(Ristinolla0 ristinolla) {
 			return pot_siirto;
 		}
 		// muuten katsotaan vastauksia
-		std::vector<int> siirrot2 = rn.priorisoi_ruudut();
-		for (int j = 0; j < siirrot2.size(); j++)
+		std::vector<int> mahdolliset_siirrot2 = rn.priorisoi_ruudut();
+		for (int j = 0; j < mahdolliset_siirrot2.size(); j++)
 		{
-			rn.tee_siirto(siirrot2[j]);
+			rn.tee_siirto(mahdolliset_siirrot2[j]);
 
 			// tuliko tappio?
 			if (rn.voitti().voitto)
