@@ -138,7 +138,7 @@ void Ristinolla0::tee_siirto(int ruutu) {
 		rivit[rivit_ja_paikat[i].rivi_id].tee_siirto(rivit_ja_paikat[i].paikka, vuorossa);
 		if (on_aktiivinen)
 		{
-			int merkkien_maara = std::max(rivit[rivit_ja_paikat[i].rivi_id].ristien_lkm, rivit[rivit_ja_paikat[i].rivi_id].nollien_lkm);
+			int merkkien_maara = rivit[rivit_ja_paikat[i].rivi_id].ristien_lkm + rivit[rivit_ja_paikat[i].rivi_id].nollien_lkm;
 			if (merkkien_maara > 1)
 			{
 				rivit_joissa_k_merkkia[merkkien_maara - 1].erase(rivit_ja_paikat[i].rivi_id);
