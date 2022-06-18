@@ -2,9 +2,10 @@
 //#include "ristinollapeli.h"
 
 wxBEGIN_EVENT_TABLE(ristinollaIkkuna, wxFrame)
-	EVT_MENU(314, ristinollaIkkuna::aloita_alusta)
-	EVT_MENU(315, ristinollaIkkuna::avaa_asetukset)
-	EVT_MENU(316, ristinollaIkkuna::lopeta)
+	EVT_MENU(aloitaEvent, ristinollaIkkuna::aloita_alusta)
+	EVT_MENU(kumoaEvent, ristinollaIkkuna::kumoa_siirto)
+	EVT_MENU(asetuksetEvent, ristinollaIkkuna::avaa_asetukset)
+	EVT_MENU(lopetaEvent, ristinollaIkkuna::lopeta)
 wxEND_EVENT_TABLE()
 
 
@@ -130,9 +131,10 @@ ristinollaIkkuna::ristinollaIkkuna() : wxFrame(nullptr, wxID_ANY, "Ristinolla", 
 	valikko = new wxMenuBar();
 	this->SetMenuBar(valikko);
 	wxMenu* menu = new wxMenu();
-	menu->Append(314, "Uusi peli\tF2");
-	menu->Append(315, "Asetukset");
-	menu->Append(316, "Lopeta");
+	menu->Append(aloitaEvent, "Uusi peli\tF2");
+	menu->Append(kumoaEvent, "Kumoa siirto");
+	menu->Append(asetuksetEvent, "Asetukset");
+	menu->Append(lopetaEvent, "Lopeta");
 	valikko->Append(menu, "Valikko");
 
 	// ai_moodi pitaisi ladata asetustiedostosta
@@ -218,6 +220,37 @@ bool ristinollaIkkuna::siirra(int ruutu) {
 		}
 	}
 	return alusta;
+}
+
+// kumotaan viimeisin ihmispelaajan tekema siirto
+void ristinollaIkkuna::kumoa_siirto(wxCommandEvent& evt) {
+	// jos peli loppunut, pitaa aktivoida ruudut uudelleen
+	if (ristinolla.ohi_on)
+	{
+		for (int i = 0; i < ristinolla.ruudut.size(); i++)
+		{
+			painikkeet[i]->Enable(true);
+		}
+		for (int i = 0; i < ristinolla.siirrot.size(); i++)
+		{
+			painikkeet[ristinolla.siirrot[i]]->Enable(false);
+		}
+	}
+
+	int edellinen_siirto = ristinolla.siirrot[ristinolla.siirrot.size() - 1];
+	painikkeet[edellinen_siirto]->SetLabel(MERKIT[2]);
+	painikkeet[edellinen_siirto]->Enable(true);
+	ristinolla.kumoa_siirto();
+	// ai:ta vastaan pitaa kumota myos ai:n siirto
+	if (asetukset["ai_moodi"] != -1)
+	{
+		int edellinen_siirto = ristinolla.siirrot[ristinolla.siirrot.size() - 1];
+		painikkeet[edellinen_siirto]->SetLabel(MERKIT[2]);
+		painikkeet[edellinen_siirto]->Enable(true);
+		ristinolla.kumoa_siirto();
+	}
+	vuororuutu->SetLabel(MERKIT[ristinolla.vuorossa]);
+	
 }
 
 void ristinollaIkkuna::painallus(wxCommandEvent& evt) {

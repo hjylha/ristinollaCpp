@@ -6,6 +6,8 @@
 #include <iostream>
 #include <fstream>
 
+enum eventit { aloitaEvent = 314, kumoaEvent, asetuksetEvent, lopetaEvent};
+
 
 class AsetusIkkuna : public wxFrame
 {
@@ -56,6 +58,7 @@ public:
 	//void tallenna_asetukset();
 	//void lataa_asetukset();
 	bool siirra(int ruutu);
+	void kumoa_siirto(wxCommandEvent& evt);
 	void painallus(wxCommandEvent& evt);
 	void aloita_alusta();
 	void aloita_alusta(wxCommandEvent& evt);
