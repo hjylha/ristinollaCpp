@@ -229,7 +229,7 @@ int Ristinolla0::arvo() {
 	{
 		for (auto& rivi_id : rivit_joissa_k_merkkia[merkkien_maara])
 		{
-			laskettu_arvo += pow(10, rivit[rivi_id].ristien_lkm) - (10, rivit[rivi_id].nollien_lkm);
+			laskettu_arvo += pow(10, rivit[rivi_id].ristien_lkm - 1) - (10, rivit[rivi_id].nollien_lkm - 1);
 		}
 	}
 
