@@ -7,6 +7,8 @@
 const char MERKIT[3] = {'X', '0', ' '};
 const std::string SUUNNAT[4] = { "A", "O", "AO", "AV" };
 
+enum suunnat { alas, oikealle, alasoikealle, alasvasemmalle };
+
 
 struct Vakiot {
 public:
@@ -21,6 +23,9 @@ public:
 	Vakiot(int leveys, int korkeus, int vier_lkm);
 };
 
+
+bool sopiiko_rivi(int ruutu_ja_suunta, Vakiot vakio);
+int is_ruutu_rivilla(unsigned int i, int ruutu_ja_suunta, Vakiot vakio);
 
 struct PaikkaRivilla {
 public:

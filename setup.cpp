@@ -19,35 +19,35 @@ bool sopiiko_rivi(int ruutu_ja_suunta, Vakiot vakio)
 	int alkuruutu = ruutu_ja_suunta / 4;
 	int suunta = ruutu_ja_suunta % 4;
 	// jos alkuruutu on oikean reunan lahella ja rivi menee oikealle
-	if ((vakio.LEVEYS - alkuruutu % vakio.LEVEYS < vakio.VIER_LKM) && (suunta == 1 || suunta == 2))
+	if ((vakio.LEVEYS - alkuruutu % vakio.LEVEYS < vakio.VIER_LKM) && (suunta == oikealle || suunta == alasoikealle))
 	{
 		return false;
 	}
 	// jos alkuruutu on alareunan lahella ja rivi menee alas
-	if ((vakio.KORKEUS - alkuruutu / vakio.LEVEYS < vakio.VIER_LKM) && (suunta == 0 || suunta == 2 || suunta == 3))
+	if ((vakio.KORKEUS - alkuruutu / vakio.LEVEYS < vakio.VIER_LKM) && (suunta == alas || suunta == alasoikealle || suunta == alasvasemmalle))
 	{
 		return false;
 	}
 	// jos alkuruutu on vasemman reunan lahella ja rivi menee alavasemmalle
-	if (alkuruutu % vakio.LEVEYS < vakio.VIER_LKM - 1 && suunta == 3)
+	if (alkuruutu % vakio.LEVEYS < vakio.VIER_LKM - 1 && suunta == alasvasemmalle)
 	{
 		return false;
 	}
 	return true;
 }
 
-int is_ruutu_rivilla(int i, int ruutu_ja_suunta, Vakiot vakio) {
+int is_ruutu_rivilla(unsigned int i, int ruutu_ja_suunta, Vakiot vakio) {
 	int alkuruutu = ruutu_ja_suunta / 4;
 	int suunta = ruutu_ja_suunta % 4;
 	switch (suunta)
 	{
-	case 0:
+	case alas:
 		return alkuruutu + i * vakio.LEVEYS;
-	case 1:
+	case oikealle:
 		return alkuruutu + i;
-	case 2:
+	case alasoikealle:
 		return alkuruutu + i + i * vakio.LEVEYS;
-	case 3:
+	case alasvasemmalle:
 		return alkuruutu - i + i * vakio.LEVEYS;
 	default:
 		return -1;
@@ -110,6 +110,7 @@ bool Rivi::onko_pelattavissa() {
 	}
 	if (ristien_lkm > 0 && nollien_lkm > 0)
 	{
+		// on_pelattavissa = false;
 		return false;
 	}
 	return true;
