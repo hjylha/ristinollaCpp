@@ -219,7 +219,7 @@ TestiTulos ristinolla::test_tee_siirto()
 	{
 		testi = testi && ristinolla.rivit_joissa_k_merkkia[k] == std::unordered_set<int>({});
 	}
-	testi = testi && ristinolla.rivit_joissa_k_merkkia[1] == std::unordered_set({2, 8, 19, 41});
+	testi = testi && ristinolla.rivit_joissa_k_merkkia[1] == std::unordered_set<int>({2, 8, 19, 41});
 
 
 	// toinen siirto
@@ -249,7 +249,7 @@ TestiTulos ristinolla::test_tee_siirto()
 	{
 		testi = testi && ristinolla.rivit_joissa_k_merkkia[k] == std::unordered_set<int>({});
 	}
-	testi = testi && ristinolla.rivit_joissa_k_merkkia[1] == std::unordered_set({4, 8, 19, 21, 41});
+	testi = testi && ristinolla.rivit_joissa_k_merkkia[1] == std::unordered_set<int>({4, 8, 19, 21, 41});
 
 	// for (int rivi_id: sopivat_rivit)
 	// {
@@ -351,7 +351,7 @@ TestiTulos ristinolla::test_kumoa_siirto()
 	{
 		testi = testi && ristinolla.rivit_joissa_k_merkkia[k] == std::unordered_set<int>({});
 	}
-	testi = testi && ristinolla.rivit_joissa_k_merkkia[1] == std::unordered_set({4, 8, 19, 21, 41});
+	testi = testi && ristinolla.rivit_joissa_k_merkkia[1] == std::unordered_set<int>({4, 8, 19, 21, 41});
 
 
     TestiTulos tulos;
@@ -456,7 +456,7 @@ TestiTulos ristinolla::test_priorisoi_ruudut()
 
 	for (int ruutu: priorisoidut_ruudut)
 	{
-		testi == testi && std::find(odotetut_ruudut.begin(), odotetut_ruudut.end(), ruutu) != odotetut_ruudut.end();		
+		testi = testi && std::find(odotetut_ruudut.begin(), odotetut_ruudut.end(), ruutu) != odotetut_ruudut.end();		
 	}
 
 
@@ -495,7 +495,7 @@ TestiTulos ristinolla::ennakoidaan_arvo()
 
 	Ristinolla0 ristinolla(vakio, tehdyt_siirrot);
 
-	std::cout << ristinolla.arvo() << std::endl;
+	// std::cout << ristinolla.arvo() << std::endl;
 
 	int paras_siirto = 253;
 
