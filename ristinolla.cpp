@@ -1,6 +1,5 @@
 #include "ristinolla.h"
 
-
 Loppu::Loppu(bool onko_voitettu, int kuka_on_voittanut) {
 	voitto = onko_voitettu;
 	kenelle = kuka_on_voittanut;
@@ -227,9 +226,67 @@ int Ristinolla0::arvo() {
 	int laskettu_arvo = 0;
 	for (int merkkien_maara = vakio.VIER_LKM - 1; merkkien_maara > 0; merkkien_maara--)
 	{
-		for (auto& rivi_id : rivit_joissa_k_merkkia[merkkien_maara])
+		for (auto rivi_id : rivit_joissa_k_merkkia[merkkien_maara])
 		{
-			laskettu_arvo += pow(10, rivit[rivi_id].ristien_lkm - 1) - (10, rivit[rivi_id].nollien_lkm - 1);
+			//laskettu_arvo = laskettu_arvo + std::pow(10, rivit[rivi_id].ristien_lkm - 1) - std::pow(10, rivit[rivi_id].nollien_lkm - 1);
+			if (merkkien_maara == rivit[rivi_id].ristien_lkm)
+			{
+				laskettu_arvo += std::pow(10, merkkien_maara - 1);
+			}
+			else
+			{
+				laskettu_arvo -= std::pow(10, merkkien_maara - 1);
+			}
+		}
+	}
+
+	/*for (int i = 0; i < vakio.LEVEYS * vakio.KORKEUS * 4; i++)
+	{
+		if (rivit[i].onko_pelattavissa())
+		{
+			laskettu_arvo += pow(10, rivit[i].ristien_lkm) - pow(10, rivit[i].nollien_lkm);
+		}
+	}*/
+
+	return laskettu_arvo;
+}
+
+int Ristinolla0::arvo_debug() {
+	// jos peli on ohi, arvo on helppo
+	Loppu tulos = voitti();
+	if (tulos.voitto && tulos.kenelle == 0)
+	{
+		return INT_MAX;
+	}
+	if (tulos.voitto && tulos.kenelle == 1)
+	{
+		return INT_MIN;
+	}
+	if (on_ratkaisematon())
+	{
+		return 0;
+	}
+
+	// muuten lasketaan
+	int laskettu_arvo = 0;
+	for (int merkkien_maara = vakio.VIER_LKM - 1; merkkien_maara > 0; merkkien_maara--)
+	{
+		for (auto rivi_id : rivit_joissa_k_merkkia[merkkien_maara])
+		{
+			/*std::cout << std::endl;
+			std::cout << "rivi: " << rivi_id << std::endl;
+			std::cout << rivit[rivi_id].ristien_lkm << " " << rivit[rivi_id].nollien_lkm << std::endl;
+			std::cout << laskettu_arvo << " + " << pow(10, rivit[rivi_id].ristien_lkm - 1) << " - " << std::pow(10, rivit[rivi_id].nollien_lkm - 1) << std::endl;
+			std::cout << "laskettu arvo: " << laskettu_arvo << std::endl;*/
+			//laskettu_arvo = laskettu_arvo + pow(10, rivit[rivi_id].ristien_lkm - 1) - std::pow(10, rivit[rivi_id].nollien_lkm - 1);
+			if (merkkien_maara == rivit[rivi_id].ristien_lkm)
+			{
+				laskettu_arvo += std::pow(10, merkkien_maara - 1);
+			}
+			else
+			{
+				laskettu_arvo -= std::pow(10, merkkien_maara - 1);
+			}
 		}
 	}
 

@@ -44,6 +44,7 @@ public:
 	void aloita_alusta();
 
 	int arvo();
+	int arvo_debug();
 	std::pair<bool, int> onko_ruudun_etaisyys_pelista_pienempi(int ruutu, int ref_etaisyys);
 	std::vector<int> priorisoi_ruudut();
 };
