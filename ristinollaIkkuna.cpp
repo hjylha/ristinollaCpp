@@ -1,5 +1,5 @@
 #include "ristinollaIkkuna.h"
-//#include "ristinollapeli.h"
+
 
 wxBEGIN_EVENT_TABLE(ristinollaIkkuna, wxFrame)
 	EVT_MENU(aloitaEvent, ristinollaIkkuna::aloita_alusta)
@@ -32,7 +32,7 @@ AsetusIkkuna::AsetusIkkuna(std::map<std::string, int> asetukset) : wxFrame(nullp
 
 	std::string vier_str = std::to_string(asetukset["vier_lkm"]);
 	wxBoxSizer* rivi3 = new wxBoxSizer(wxHORIZONTAL);
-	wxStaticText* vier_selitys = new wxStaticText(this, wxID_ANY, "Merkkejä halutaan vierekkäin: ");
+	wxStaticText* vier_selitys = new wxStaticText(this, wxID_ANY, "Merkkejï¿½ halutaan vierekkï¿½in: ");
 	rivi3->Add(vier_selitys, 1);
 	vier_teksti = new wxTextCtrl(this, wxID_ANY, vier_str);
 	rivi3->Add(vier_teksti, 0);
@@ -140,9 +140,7 @@ ristinollaIkkuna::ristinollaIkkuna() : wxFrame(nullptr, wxID_ANY, "Ristinolla", 
 	// ai_moodi pitaisi ladata asetustiedostosta
 	//ai_moodi = 0; asetukset["ai_moodi"]
 	ennakoitujen_siirtojen_lkm = 4;
-	ristinolla = Ristinolla0(vakiot, {});
-	//ristinolla = Ristinolla_OG(vakiot, {}, {});
-	//ristinolla = Ristinolla(vakiot, {}, {});
+	ristinolla = Ristinolla(vakiot, {});
 	//painike = new wxButton(this, wxID_ANY, "Click this", wxPoint(10, 10), wxSize(150, 50));
 	painikkeet = new wxButton * [vakiot.KORKEUS * vakiot.LEVEYS];
 	grid = new wxGridSizer(vakiot.KORKEUS, vakiot.LEVEYS, 0, 0);
@@ -173,9 +171,7 @@ ristinollaIkkuna::ristinollaIkkuna() : wxFrame(nullptr, wxID_ANY, "Ristinolla", 
 	// jos AI aloittaa, sen siirron kai tulee maaraytya tassa
 	if (asetukset["ai_moodi"] == 0)
 	{
-		//int siirto = siirto_arvon_perusteella(ristinolla);
-		//int siirto = siirto_arvon_perusteella_e(ristinolla, ennakoitujen_siirtojen_lkm, 0)[0];
-		//int siirto = siirto_rek_arvon_perusteella(ristinolla, ennakoitujen_siirtojen_lkm);
+		
 		int siirto = aloitussiirto(vakiot);
 		painikkeet[siirto]->SetLabel(MERKIT[ristinolla.vuorossa]);
 		painikkeet[siirto]->Enable(false);
@@ -340,7 +336,7 @@ void ristinollaIkkuna::muuta_asetuksia(int leveys, int korkeus, int vier_lkm) {
 	asetukset["korkeus"] = korkeus;
 	asetukset["vier_lkm"] = vier_lkm;
 	Vakiot vakiot = Vakiot(leveys, korkeus, vier_lkm);
-	ristinolla = Ristinolla0(vakiot, {});
+	ristinolla = Ristinolla(vakiot, {});
 	painikkeet = new wxButton * [ristinolla.vakio.KORKEUS * ristinolla.vakio.LEVEYS];
 	grid = new wxGridSizer(ristinolla.vakio.KORKEUS, ristinolla.vakio.LEVEYS, 0, 0);
 	for (int i = 0; i < ristinolla.vakio.LEVEYS * ristinolla.vakio.KORKEUS; i++)

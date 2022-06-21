@@ -5,11 +5,11 @@ Loppu::Loppu(bool onko_voitettu, int kuka_on_voittanut) {
 	kenelle = kuka_on_voittanut;
 }
 
-Ristinolla0::Ristinolla0() {
+Ristinolla::Ristinolla() {
 
 }
 
-Ristinolla0::Ristinolla0(Vakiot vakiot, std::vector<int> aiemmat_siirrot)
+Ristinolla::Ristinolla(Vakiot vakiot, std::vector<int> aiemmat_siirrot)
 	: vakio(vakiot)
 {
 	for (int i = 0; i < vakio.LEVEYS * vakio.KORKEUS; i++)
@@ -58,11 +58,11 @@ Ristinolla0::Ristinolla0(Vakiot vakiot, std::vector<int> aiemmat_siirrot)
 	
 }
 
-void Ristinolla0::vaihda_vuoroa() {
+void Ristinolla::vaihda_vuoroa() {
 	vuorossa = ++vuorossa % 2;
 }
 
-bool Ristinolla0::on_ratkaisematon() {
+bool Ristinolla::on_ratkaisematon() {
 	for (int i = 0; i < rivit.size(); i++)
 	{
 		if (rivit[i].onko_pelattavissa())
@@ -74,7 +74,7 @@ bool Ristinolla0::on_ratkaisematon() {
 	return true;
 }
 
-bool Ristinolla0::risti_voitti() {
+bool Ristinolla::risti_voitti() {
 	for (int i = 0; i < rivit.size(); i++)
 	{
 		if (rivit[i].ristien_lkm == vakio.VIER_LKM)
@@ -87,7 +87,7 @@ bool Ristinolla0::risti_voitti() {
 	return false;
 }
 
-bool Ristinolla0::nolla_voitti() {
+bool Ristinolla::nolla_voitti() {
 	for (int i = 0; i < rivit.size(); i++)
 	{
 		if (rivit[i].nollien_lkm == vakio.VIER_LKM)
@@ -100,7 +100,7 @@ bool Ristinolla0::nolla_voitti() {
 	return false;
 }
 
-Loppu Ristinolla0::voitti() {
+Loppu Ristinolla::voitti() {
 	if (rivit_joissa_k_merkkia[vakio.VIER_LKM].empty())
 	{
 		return Loppu(false, 2);
@@ -119,7 +119,7 @@ Loppu Ristinolla0::voitti() {
 	}
 }
 
-bool Ristinolla0::onko_siirto_mahdollinen(int ruutu) {
+bool Ristinolla::onko_siirto_mahdollinen(int ruutu) {
 	if (ruudut[ruutu] == 2)
 	{
 		return true;
@@ -127,7 +127,7 @@ bool Ristinolla0::onko_siirto_mahdollinen(int ruutu) {
 	return false;
 }
 
-void Ristinolla0::tee_siirto(int ruutu) {
+void Ristinolla::tee_siirto(int ruutu) {
 	ruudut[ruutu] = vuorossa;
 	siirrot.push_back(ruutu);
 	std::vector<PaikkaRivilla> rivit_ja_paikat = missa_riveissa_ruutu_on(vakio, ruutu);
@@ -152,7 +152,7 @@ void Ristinolla0::tee_siirto(int ruutu) {
 	vaihda_vuoroa();
 }
 
-void Ristinolla0::kumoa_siirto() {
+void Ristinolla::kumoa_siirto() {
 	// jos ei kumottavaa, ei tehda mitaan
 	if (siirrot.empty())
 	{
@@ -186,7 +186,7 @@ void Ristinolla0::kumoa_siirto() {
 	vaihda_vuoroa();
 }
 
-void Ristinolla0::aloita_alusta() {
+void Ristinolla::aloita_alusta() {
 	siirrot.clear();
 	vuorossa = 0;
 	for (int i = 0; i < ruudut.size(); i++)
@@ -206,7 +206,7 @@ void Ristinolla0::aloita_alusta() {
 	}
 }
 
-int Ristinolla0::arvo() {
+int Ristinolla::arvo() {
 	// jos peli on ohi, arvo on helppo
 	Loppu tulos = voitti();
 	if (tulos.voitto && tulos.kenelle == 0)
@@ -251,7 +251,7 @@ int Ristinolla0::arvo() {
 	return laskettu_arvo;
 }
 
-std::pair<bool, int> Ristinolla0::onko_ruudun_etaisyys_pelista_pienempi(int ruutu, int ref_etaisyys) {
+std::pair<bool, int> Ristinolla::onko_ruudun_etaisyys_pelista_pienempi(int ruutu, int ref_etaisyys) {
 	int etaisyys_pelista = std::max(vakio.KORKEUS, vakio.LEVEYS);
 	for (int i = 0; i < siirrot.size(); i++)
 	{
@@ -266,7 +266,7 @@ std::pair<bool, int> Ristinolla0::onko_ruudun_etaisyys_pelista_pienempi(int ruut
 	return { false, etaisyys_pelista };
 }
 
-std::vector<int> Ristinolla0::priorisoi_ruudut() {
+std::vector<int> Ristinolla::priorisoi_ruudut() {
 	std::vector<int> priorisoidut;
 	//std::vector<int> ylijaama;
 

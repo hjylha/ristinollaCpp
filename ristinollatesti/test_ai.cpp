@@ -26,7 +26,7 @@ TestiTulos ai::test_aloitussiirto()
 
 TestiTulos ai::test_siirto_arvon_perusteella()
 {
-    Ristinolla0 ristinolla(testivakio, {});
+    Ristinolla ristinolla(testivakio, {});
     bool testi = siirto_arvon_perusteella(ristinolla) == 12;
 
     TestiTulos tulos;

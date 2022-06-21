@@ -50,7 +50,7 @@ public:
 	int ennakoitujen_siirtojen_lkm;
 	//int ai_moodi;  // pelaako AI ristilla (0), nollalla (1) vai ei ollenkaan (-1)
 	//Vakiot vakiot;  // = Vakiot(3, 3, 3);  // 24, 16, 5
-	Ristinolla0 ristinolla;
+	Ristinolla ristinolla;
 	//Ristinolla ristinolla;
 	ristinollaIkkuna();
 	~ristinollaIkkuna();

@@ -16,7 +16,7 @@ public:
 	Loppu(bool onko_voitettu, int kuka_on_voittanut);
 };
 
-class Ristinolla0 {
+class Ristinolla {
 public:
 	Vakiot vakio;
 	std::vector<int> ruudut;
@@ -29,8 +29,8 @@ public:
 
 	std::vector<std::unordered_set<int>> rivit_joissa_k_merkkia;
 
-	Ristinolla0();
-	Ristinolla0(Vakiot vakiot, std::vector<int> aiemmat_siirrot);
+	Ristinolla();
+	Ristinolla(Vakiot vakiot, std::vector<int> aiemmat_siirrot);
 
 	void vaihda_vuoroa();
 

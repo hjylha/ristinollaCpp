@@ -5,7 +5,7 @@
 TestiTulos ristinolla::test_Ristinolla_constructor_tyhja() {
     bool testi = true;
 
-    Ristinolla0 ristinolla = Ristinolla0(testivakio, {});
+    Ristinolla ristinolla = Ristinolla(testivakio, {});
 
     // ruudut tyhjia (eli 2)
     for (auto ruutu : ristinolla.ruudut)
@@ -43,7 +43,7 @@ TestiTulos ristinolla::test_Ristinolla_constructor() {
     bool testi = true;
 
 	std::vector<int> aiemmat_siirrot = {12, 6, 11};
-	Ristinolla0 ristinolla = Ristinolla0(testivakio, aiemmat_siirrot);
+	Ristinolla ristinolla = Ristinolla(testivakio, aiemmat_siirrot);
 
 	// testataan ruudut
 	for (int ruutu_id = 0; ruutu_id < ristinolla.ruudut.size(); ruutu_id++)
@@ -102,7 +102,7 @@ TestiTulos ristinolla::test_Ristinolla_constructor() {
 
 TestiTulos ristinolla::test_vaihda_vuoroa()
 {
-	Ristinolla0 ristinolla = Ristinolla0(testivakio, {});
+	Ristinolla ristinolla = Ristinolla(testivakio, {});
 	ristinolla.vaihda_vuoroa();
 
     bool testi = ristinolla.vuorossa == 1;
@@ -116,10 +116,10 @@ TestiTulos ristinolla::test_vaihda_vuoroa()
 
 TestiTulos ristinolla::test_on_ratkaisematon()
 {
-	Ristinolla0 ristinolla = Ristinolla0(testivakio, {});
+	Ristinolla ristinolla = Ristinolla(testivakio, {});
 	bool testi = !ristinolla.on_ratkaisematon();
 
-	ristinolla = Ristinolla0(testivakio, {0, 4, 8, 6, 11, 10, 12, 13, 17, 16, 24, 22});
+	ristinolla = Ristinolla(testivakio, {0, 4, 8, 6, 11, 10, 12, 13, 17, 16, 24, 22});
 	testi = testi && ristinolla.on_ratkaisematon();
 
     TestiTulos tulos;
@@ -131,11 +131,11 @@ TestiTulos ristinolla::test_on_ratkaisematon()
 
 TestiTulos ristinolla::test_risti_voitti()
 {
-	Ristinolla0 ristinolla = Ristinolla0(testivakio, {});
+	Ristinolla ristinolla = Ristinolla(testivakio, {});
 	bool testi = !ristinolla.risti_voitti();
 	testi = testi && !ristinolla.ohi_on && ristinolla.voittaja == -1;
 
-	ristinolla = Ristinolla0(testivakio, {0, 1, 6, 8, 12, 13, 18, 16, 24});
+	ristinolla = Ristinolla(testivakio, {0, 1, 6, 8, 12, 13, 18, 16, 24});
 	testi = testi && ristinolla.risti_voitti();
 	testi = testi && ristinolla.ohi_on && ristinolla.voittaja == 0;
 
@@ -148,11 +148,11 @@ TestiTulos ristinolla::test_risti_voitti()
 
 TestiTulos ristinolla::test_nolla_voitti()
 {
-	Ristinolla0 ristinolla = Ristinolla0(testivakio, {});
+	Ristinolla ristinolla = Ristinolla(testivakio, {});
 	bool testi = !ristinolla.nolla_voitti();
 	testi = testi && !ristinolla.ohi_on && ristinolla.voittaja == -1;
 
-	ristinolla = Ristinolla0(testivakio, {2, 0, 1, 6, 8, 12, 13, 18, 16, 24});
+	ristinolla = Ristinolla(testivakio, {2, 0, 1, 6, 8, 12, 13, 18, 16, 24});
 	testi = testi && ristinolla.nolla_voitti();
 	testi = testi && ristinolla.ohi_on && ristinolla.voittaja == 1;
 
@@ -165,17 +165,17 @@ TestiTulos ristinolla::test_nolla_voitti()
 
 TestiTulos ristinolla::test_voitti()
 {
-	Ristinolla0 ristinolla = Ristinolla0(testivakio, {});
+	Ristinolla ristinolla = Ristinolla(testivakio, {});
 	Loppu lopputulos = ristinolla.voitti();
 	bool testi = !lopputulos.voitto && lopputulos.kenelle == 2;
 	testi = testi && !ristinolla.ohi_on && ristinolla.voittaja == -1;
 
-	ristinolla = Ristinolla0(testivakio, {0, 1, 6, 8, 12, 13, 18, 16, 24});
+	ristinolla = Ristinolla(testivakio, {0, 1, 6, 8, 12, 13, 18, 16, 24});
 	lopputulos = ristinolla.voitti();
 	testi = testi && lopputulos.voitto && lopputulos.kenelle == 0;
 	testi = testi && ristinolla.ohi_on && ristinolla.voittaja == 0;
 
-	ristinolla = Ristinolla0(testivakio, {2, 0, 1, 6, 8, 12, 13, 18, 16, 24});
+	ristinolla = Ristinolla(testivakio, {2, 0, 1, 6, 8, 12, 13, 18, 16, 24});
 	lopputulos = ristinolla.voitti();
 	testi = testi && lopputulos.voitto && lopputulos.kenelle == 1;
 	testi = testi && ristinolla.ohi_on && ristinolla.voittaja == 1;
@@ -190,11 +190,11 @@ TestiTulos ristinolla::test_voitti()
 TestiTulos ristinolla::test_onko_siirto_mahdollinen()
 {
 	int ruutu_id = 12;
-	Ristinolla0 ristinolla = Ristinolla0(testivakio, {});
+	Ristinolla ristinolla = Ristinolla(testivakio, {});
 	bool testi = ristinolla.onko_siirto_mahdollinen(ruutu_id);
 
 
-	ristinolla = Ristinolla0(testivakio, {0, 1, 6, 8, 12, 13, 18, 16, 24});
+	ristinolla = Ristinolla(testivakio, {0, 1, 6, 8, 12, 13, 18, 16, 24});
 	testi = testi && !ristinolla.onko_siirto_mahdollinen(ruutu_id);
 
     TestiTulos tulos;
@@ -206,7 +206,7 @@ TestiTulos ristinolla::test_onko_siirto_mahdollinen()
 
 TestiTulos ristinolla::test_tee_siirto()
 {
-	Ristinolla0 ristinolla = Ristinolla0(testivakio, {});
+	Ristinolla ristinolla = Ristinolla(testivakio, {});
 	int siirto = 12;
 	ristinolla.tee_siirto(siirto);
 
@@ -320,7 +320,7 @@ TestiTulos ristinolla::test_tee_siirto()
 
 TestiTulos ristinolla::test_kumoa_siirto()
 {
-	Ristinolla0 ristinolla = Ristinolla0(testivakio, {});
+	Ristinolla ristinolla = Ristinolla(testivakio, {});
 	ristinolla.tee_siirto(12);
 	ristinolla.tee_siirto(6);
 	ristinolla.tee_siirto(11);
@@ -363,7 +363,7 @@ TestiTulos ristinolla::test_kumoa_siirto()
 
 TestiTulos ristinolla::test_aloita_alusta()
 {
-	Ristinolla0 ristinolla = Ristinolla0(testivakio, {});
+	Ristinolla ristinolla = Ristinolla(testivakio, {});
 	ristinolla.tee_siirto(12);
 	ristinolla.tee_siirto(6);
 	ristinolla.tee_siirto(11);
@@ -408,7 +408,7 @@ TestiTulos ristinolla::test_aloita_alusta()
 
 TestiTulos ristinolla::test_arvo()
 {
-	Ristinolla0 ristinolla = Ristinolla0(testivakio, {});
+	Ristinolla ristinolla = Ristinolla(testivakio, {});
 
 	bool testi = ristinolla.arvo() == 0;
 
@@ -445,7 +445,7 @@ bool testi = true;
 
 TestiTulos ristinolla::test_priorisoi_ruudut()
 {
-	Ristinolla0 ristinolla = Ristinolla0(testivakio, {});
+	Ristinolla ristinolla = Ristinolla(testivakio, {});
 	ristinolla.tee_siirto(12);
 
 	std::vector<int> priorisoidut_ruudut = ristinolla.priorisoi_ruudut();
@@ -493,7 +493,7 @@ TestiTulos ristinolla::ennakoidaan_arvo()
 	Vakiot vakio(24, 16, 5);
 	std::vector<int> tehdyt_siirrot = {204, 205, 227, 181, 228, 229};
 
-	Ristinolla0 ristinolla(vakio, tehdyt_siirrot);
+	Ristinolla ristinolla(vakio, tehdyt_siirrot);
 
 	// std::cout << ristinolla.arvo() << std::endl;
 

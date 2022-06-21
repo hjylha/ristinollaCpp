@@ -9,7 +9,7 @@ int aloitussiirto(Vakiot vakio) {
 	return (vakio.KORKEUS / 2) * vakio.LEVEYS + vakio.LEVEYS / 2;
 }
 
-int siirto_arvon_perusteella(Ristinolla0 ristinolla) {
+int siirto_arvon_perusteella(Ristinolla ristinolla) {
 	int siirto = -1;
 
 	if (!ristinolla.rivit_joissa_k_merkkia[ristinolla.vakio.VIER_LKM - 1].empty())
@@ -17,7 +17,7 @@ int siirto_arvon_perusteella(Ristinolla0 ristinolla) {
 		return ristinolla.rivit[*ristinolla.rivit_joissa_k_merkkia[ristinolla.vakio.VIER_LKM - 1].begin()].vapaat_ruudut()[0];
 	}
 
-	Ristinolla0 rn(ristinolla.vakio, ristinolla.siirrot);
+	Ristinolla rn(ristinolla.vakio, ristinolla.siirrot);
 	int vuoro = rn.vuorossa;
 	//int toinen = (rn.vuorossa + 1) % 2;
 	int alkuarvo = !vuoro ? INT_MIN : INT_MAX;
