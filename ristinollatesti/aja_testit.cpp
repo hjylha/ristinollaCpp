@@ -19,7 +19,7 @@ TestiTulos valiteksti(std::string teksti)
 std::vector<TestiTulos> aja_testit() {
 	std::vector<TestiTulos> testitulokset;
 
-	testitulokset.push_back(valiteksti("setup.cpp -testit"));
+	testitulokset.push_back(valiteksti("setup.cpp -testit (tulos 0)"));
 	testitulokset.push_back(setup::test_vakiot());
 	testitulokset.push_back(setup::test_paikkarivilla());
 	testitulokset.push_back(setup::test_sopiiko_rivi());
@@ -35,7 +35,7 @@ std::vector<TestiTulos> aja_testit() {
 	testitulokset.push_back(setup::test_missa_riveissa_ruutu_on());
 
 	testitulokset.push_back(valiteksti(""));
-	testitulokset.push_back(valiteksti("ristinolla.cpp -testit"));
+	testitulokset.push_back(valiteksti("ristinolla.cpp -testit (tulos 0)"));
 	testitulokset.push_back(ristinolla::test_Ristinolla_constructor_tyhja());
 	testitulokset.push_back(ristinolla::test_Ristinolla_constructor());
 	testitulokset.push_back(ristinolla::test_vaihda_vuoroa());
@@ -51,7 +51,7 @@ std::vector<TestiTulos> aja_testit() {
 	testitulokset.push_back(ristinolla::ennakoidaan_arvo());
 
 	testitulokset.push_back(valiteksti(""));
-	testitulokset.push_back(valiteksti("ai.cpp -testit"));
+	testitulokset.push_back(valiteksti("ai.cpp -testit (tulos 0)"));
 	testitulokset.push_back(ai::test_aloitussiirto());
 	testitulokset.push_back(ai::test_siirto_arvon_perusteella());
 

@@ -327,7 +327,8 @@ TestiTulos ristinolla::test_kumoa_siirto()
 
 	ristinolla.kumoa_siirto();
 
-	bool testi = testi && ristinolla.vuorossa == 0 && ristinolla.siirrot == std::vector<int>({12, 6});
+	bool testi = ristinolla.vuorossa == 0 && ristinolla.siirrot == std::vector<int>({12, 6});
+
 	for (int ruutu = 0; ruutu < ristinolla.ruudut.size(); ruutu++)
 	{
 		switch (ruutu)
