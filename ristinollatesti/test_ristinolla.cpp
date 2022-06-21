@@ -518,7 +518,7 @@ TestiTulos ristinolla::ennakoidaan_arvo()
 
 	// std::cout << minimiarvo << " < " << ristinolla.arvo() << std::endl;
 
-	bool testi = minimiarvo > ristinolla.arvo_debug();
+	bool testi = minimiarvo > ristinolla.arvo();
 
 	TestiTulos tulos;
 	tulos.kuvaus = "arvo- ja priorisoi_ruudut-metodien tutkintaa";
