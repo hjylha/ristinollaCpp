@@ -58,6 +58,56 @@ Ristinolla::Ristinolla(Vakiot vakiot, std::vector<int> aiemmat_siirrot)
 	
 }
 
+Ristinolla::Ristinolla(Vakiot vakiot, std::vector<int> aiemmat_siirrot, int ain_moodi)
+	: vakio(vakiot)
+{
+	for (int i = 0; i < vakio.LEVEYS * vakio.KORKEUS; i++)
+	{
+		ruudut.push_back(2);
+	}
+	//siirrot = aiemmat_siirrot;
+	vuorossa = aiemmat_siirrot.size() % 2;
+	ai_moodi = ain_moodi;
+	for (int i = 0; i < vakio.LEVEYS * vakio.KORKEUS * 4; i++)
+	{
+		rivit.push_back(Rivi(vakio, i));
+	}
+
+	for (int i = 0; i < vakio.VIER_LKM + 1; i++)
+	{
+		rivit_joissa_k_merkkia.push_back(std::unordered_set<int>());
+	}
+
+	ohi_on = false;
+	voittaja = -1;
+
+	// tarkastetaan mahdolliset aiemmat siirrot
+	if (!aiemmat_siirrot.empty())
+	{
+		for (int i = 0; i < aiemmat_siirrot.size(); i++)
+		{
+			ruudut[aiemmat_siirrot[i]] = i % 2;
+			std::vector<PaikkaRivilla> rivit_ja_paikat = missa_riveissa_ruutu_on(vakio, aiemmat_siirrot[i]);
+			for (int j = 0; j < rivit_ja_paikat.size(); j++)
+			{
+				rivit[rivit_ja_paikat[j].rivi_id].tee_siirto(rivit_ja_paikat[j].paikka, i % 2);
+			}
+		}
+		for (int i = 0; i < rivit.size(); i++)
+		{
+			if (rivit[i].on_pelattavissa)
+			{
+				int symbolien_maara = std::max(rivit[i].ristien_lkm, rivit[i].nollien_lkm);
+				if (symbolien_maara > 0)
+				{
+					rivit_joissa_k_merkkia[symbolien_maara].insert(i);
+				}
+			}
+		}
+	}
+	
+}
+
 void Ristinolla::vaihda_vuoroa() {
 	vuorossa = ++vuorossa % 2;
 }

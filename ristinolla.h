@@ -23,6 +23,7 @@ public:
 	std::vector<Rivi> rivit;
 	std::vector<int> siirrot;
 	int vuorossa;
+	int ai_moodi;
 
 	bool ohi_on;
 	int voittaja;
@@ -31,6 +32,7 @@ public:
 
 	Ristinolla();
 	Ristinolla(Vakiot vakiot, std::vector<int> aiemmat_siirrot);
+	Ristinolla(Vakiot vakiot, std::vector<int> aiemmat_siirrot, int ain_moodi);
 
 	void vaihda_vuoroa();
 
