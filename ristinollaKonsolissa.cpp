@@ -129,8 +129,11 @@ void piirraRistinolla(Ristinolla ristinolla, int valittu_ruutu) {
         }
         std::cout << "--|\n";
     }
-
-    std::cout << "Vuorossa: " << MERKIT[ristinolla.vuorossa] << "\n";
+    if (!ristinolla.ohi_on)
+    {
+        std::cout << "Vuorossa: " << MERKIT[ristinolla.vuorossa] << "\n";
+    }
+    
      
 }
 
@@ -207,7 +210,7 @@ void pelaaRistinollaa(int leveys, int korkeus, int vier_lkm, int ai_moodi) {
             // }
             valittu_ruutu = valinta_vasemmalle(valittu_ruutu, rn);
             piirraRistinolla(rn, valittu_ruutu);
-            std::cout << "painettu vasemmalle: " << valittu_ruutu << std::endl;
+            // std::cout << "painettu vasemmalle: " << valittu_ruutu << std::endl;
         }
         // ylos
         if (painetut_painikkeet[2])
@@ -221,7 +224,7 @@ void pelaaRistinollaa(int leveys, int korkeus, int vier_lkm, int ai_moodi) {
             // }
             valittu_ruutu = valinta_ylos(valittu_ruutu, rn);
             piirraRistinolla(rn, valittu_ruutu);
-            std::cout << "painettu ylos: " << valittu_ruutu << std::endl;
+            // std::cout << "painettu ylos: " << valittu_ruutu << std::endl;
         }
 
         // oikealle
@@ -236,7 +239,7 @@ void pelaaRistinollaa(int leveys, int korkeus, int vier_lkm, int ai_moodi) {
             // }
             valittu_ruutu = valinta_oikealle(valittu_ruutu, rn);
             piirraRistinolla(rn, valittu_ruutu);
-            std::cout << "painettu oikealle: " << valittu_ruutu << std::endl;
+            // std::cout << "painettu oikealle: " << valittu_ruutu << std::endl;
         }
 
         // alas
@@ -251,7 +254,7 @@ void pelaaRistinollaa(int leveys, int korkeus, int vier_lkm, int ai_moodi) {
             // }
             valittu_ruutu = valinta_alas(valittu_ruutu, rn);
             piirraRistinolla(rn, valittu_ruutu);
-            std::cout << "painettu alas: " << valittu_ruutu << std::endl;
+            // std::cout << "painettu alas: " << valittu_ruutu << std::endl;
         }
         
         
